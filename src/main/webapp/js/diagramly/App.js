@@ -21,7 +21,7 @@ App = function(editor, container, lightbox)
 	this.editor.addListener('autosaveChanged', mxUtils.bind(this, function()
 	{
 		var file = this.getCurrentFile();
-		
+
 		if (file != null)
 		{
 			EditorUi.logEvent({category: ((this.editor.autosave) ? 'ON' : 'OFF') +
@@ -29,6 +29,42 @@ App = function(editor, container, lightbox)
 				label: 'autosave_' + ((this.editor.autosave) ? 'on' : 'off')});
 		}
 	}));
+
+	// Reloads this tab when a release channel switch (flagged by
+	// switchReleaseChannel in any tab) activates the other channel's
+	// service worker, so no tab keeps running one channel's shell against
+	// the other channel's cache. Only with no unsaved changes.
+	if (Editor.enableServiceWorker && ('serviceWorker' in navigator))
+	{
+		try
+		{
+			navigator.serviceWorker.addEventListener('controllerchange',
+				mxUtils.bind(this, function()
+			{
+				try
+				{
+					var ts = parseInt(localStorage.getItem(
+						'.drawio-channel-switch-ts'), 10);
+					var elapsed = Date.now() - ts;
+
+					if (!isNaN(elapsed) && elapsed >= 0 && elapsed < 600000 &&
+						(this.getCurrentFile() == null ||
+						!this.getCurrentFile().isModified()))
+					{
+						window.location.reload();
+					}
+				}
+				catch (e)
+				{
+					// ignore
+				}
+			}));
+		}
+		catch (e)
+		{
+			// ignore
+		}
+	}
 	
 	// Pre-fetches images
 	if (mxClient.IS_SVG)
@@ -301,8 +337,7 @@ App.pluginRegistry = {'4xAKTrabTpTzahoLthkwPNUn': 'plugins/explore.js',
 	'replay': 'plugins/replay.js', 'anon': 'plugins/anonymize.js',
 	'tr': 'plugins/trello.js', 'f5': 'plugins/rackF5.js',
 	'webcola': 'plugins/webcola/webcola.js', 'rnd': 'plugins/random.js',
-	'page': 'plugins/page.js', 'gd': 'plugins/googledrive.js',
-	'tags': 'plugins/tags.js'};
+	'page': 'plugins/page.js', 'tags': 'plugins/tags.js'};
 
 App.publicPlugin = [
 	'ex',
@@ -319,7 +354,7 @@ App.publicPlugin = [
 	'replay',
 	'anon',
 	'webcola',
-//	'rnd', 'page', 'gd',
+//	'rnd', 'page',
 	'tags'
 ];
 
@@ -552,11 +587,25 @@ App.getStoredMode = function()
  */
 App.clearServiceWorker = function(success, error)
 {
+	try
+	{
+		// A cleared PWA cache also resets the release channel state.
+		localStorage.removeItem('.drawio-channel');
+		localStorage.removeItem('.drawio-channel-ts');
+		localStorage.removeItem('.drawio-channel-swerr-ts');
+		localStorage.removeItem('.drawio-channel-swfail');
+		localStorage.removeItem('.drawio-channel-switch-ts');
+	}
+	catch (e)
+	{
+		// ignore
+	}
+
 	navigator.serviceWorker.getRegistration().then(function(reg)
 	{
 		if (reg != null)
 		{
-			reg.unregister().then(function()
+			return reg.unregister().then(function()
 			{
 				if (success != null)
 				{
@@ -565,6 +614,11 @@ App.clearServiceWorker = function(success, error)
 				}
 			});
 		}
+		else if (success != null)
+		{
+			success();
+			success = null;
+		}
 	})['catch'](function()
 	{
 		if (error != null)
@@ -572,6 +626,111 @@ App.clearServiceWorker = function(success, error)
 			error();
 		}
 	});
+};
+
+/**
+ * Returns 'stable' if this browser is pinned to the stable release channel,
+ * or null for the default (beta) channel.
+ */
+App.getReleaseChannel = function()
+{
+	try
+	{
+		return (isLocalStorage && localStorage.getItem('.drawio-channel') ==
+			'stable') ? 'stable' : null;
+	}
+	catch (e)
+	{
+		return null;
+	}
+};
+
+/**
+ * Stores the release channel ('stable' or null for beta).
+ */
+App.setReleaseChannel = function(channel)
+{
+	try
+	{
+		if (channel == 'stable')
+		{
+			localStorage.setItem('.drawio-channel', 'stable');
+		}
+		else
+		{
+			localStorage.removeItem('.drawio-channel');
+		}
+	}
+	catch (e)
+	{
+		// ignore
+	}
+};
+
+/**
+ * Rate-limited (one report per day) logging for service worker failures,
+ * plus a distinct-day failure counter for the stable channel that drives
+ * the automatic fallback to beta in App.main.
+ */
+App.logServiceWorkerError = function(swUrl, e)
+{
+	try
+	{
+		EditorUi.debug('App.logServiceWorkerError', swUrl, e);
+
+		var now = Date.now();
+		var ts = parseInt(localStorage.getItem('.drawio-channel-swerr-ts'), 10);
+		var elapsed = now - ts;
+
+		if (isNaN(elapsed) || elapsed < 0 || elapsed >= 86400000)
+		{
+			localStorage.setItem('.drawio-channel-swerr-ts', String(now));
+
+			if (App.getReleaseChannel() == 'stable')
+			{
+				localStorage.setItem('.drawio-channel-swfail',
+					String(App.getServiceWorkerFailures() + 1));
+			}
+
+			EditorUi.logError('Service worker error: ' + swUrl,
+				null, null, null, e);
+		}
+	}
+	catch (e2)
+	{
+		// ignore
+	}
+};
+
+/**
+ * Returns the number of distinct days with stable channel failures.
+ */
+App.getServiceWorkerFailures = function()
+{
+	try
+	{
+		return parseInt(localStorage.getItem('.drawio-channel-swfail'), 10) || 0;
+	}
+	catch (e)
+	{
+		return 0;
+	}
+};
+
+/**
+ * Resets the service worker failure counter and report timestamp.
+ */
+App.resetServiceWorkerFailures = function()
+{
+	try
+	{
+		localStorage.removeItem('.drawio-channel-swfail');
+		localStorage.removeItem('.drawio-channel-swerr-ts');
+	}
+	catch (e)
+	{
+		// ignore
+	}
 };
 
 /**
@@ -635,7 +794,7 @@ App.main = function(callback, createUi)
 		if (mxIsElectron && typeof electron === 'undefined')
 		{
 			alert('Runtime Environment not found.');
-			document.body.innerHTML = '<div style="margin-top:10%;text-align:center;">' +
+			document.body.innerHTML = '<div style="grid-column:1 / -1;grid-row:1 / -1;margin-top:10%;text-align:center;">' +
 				'<img src="mxgraph/images/warning.png" align="top" style="padding-right:6px;"/>' +
 				'Runtime Environment not found.</div>';
 			
@@ -688,7 +847,7 @@ App.main = function(callback, createUi)
 			'ac.draw.io' === window.location.hostname ||
 			'aj.draw.io' === window.location.hostname))
 		{
-			document.body.innerHTML = '<div style="margin-top:10%;text-align:center;">Stand-alone mode not allowed for this domain.</div>';
+			document.body.innerHTML = '<div style="grid-column:1 / -1;grid-row:1 / -1;margin-top:10%;text-align:center;">Stand-alone mode not allowed for this domain.</div>';
 			
 			return;
 		}
@@ -741,17 +900,55 @@ App.main = function(callback, createUi)
 				{
 					navigator.serviceWorker.getRegistration().then(function(reg)
 					{
-						if (reg != null)
+						// The registration URL is the release channel: the stable
+						// script is served via the edge route to the pinned build
+						// and needs scope '/' (Service-Worker-Allowed header).
+						var stable = App.getReleaseChannel() == 'stable';
+
+						// Frozen-but-working must not become permanent: after
+						// two weeks of distinct-day stable service worker
+						// failures, fall back to the default channel.
+						if (stable && App.getServiceWorkerFailures() >= 14)
+						{
+							EditorUi.debug('App.main',
+								'Stable channel failing, reverting to beta');
+							App.setReleaseChannel(null);
+							App.resetServiceWorkerFailures();
+							stable = false;
+						}
+
+						var swUrl = (stable) ? 'stable/service-worker.js' :
+							'service-worker.js';
+						var current = (reg != null) ? (reg.active || reg.waiting ||
+							reg.installing) : null;
+
+						if (current != null && stable ==
+							/\/stable\/service-worker\.js$/.test(current.scriptURL))
 						{
 							EditorUi.debug('App.main', 'Updating service worker');
-							reg.update();
+							reg.update().then(function()
+							{
+								App.resetServiceWorkerFailures();
+							})['catch'](function(e)
+							{
+								App.logServiceWorkerError(swUrl, e);
+							});
 						}
-						// Skips service worker install on first load
-						else if (!Editor.isSettingsEnabled() || (mxSettings.settings != null &&
+						// Skips service worker install on first load unless the
+						// channel was pinned (eg. via the ?channel= link) or the
+						// installed worker is on the wrong channel
+						else if (current != null || App.getReleaseChannel() != null ||
+							!Editor.isSettingsEnabled() || (mxSettings.settings != null &&
 							!mxSettings.settings.isNew) || urlParams['enableSW'] == '1')
 						{
-							EditorUi.debug('App.main', 'Installing service worker');
-							navigator.serviceWorker.register('service-worker.js');
+							EditorUi.debug('App.main', 'Installing service worker', swUrl);
+							navigator.serviceWorker.register(swUrl, {scope: './'}).then(function()
+							{
+								App.resetServiceWorkerFailures();
+							})['catch'](function(e)
+							{
+								App.logServiceWorkerError(swUrl, e);
+							});
 						}
 						else
 						{
@@ -1521,6 +1718,13 @@ App.prototype.init = function()
 		}
 	}));
 
+	// Restores compact mode from settings
+	if (Editor.isSettingsEnabled() && mxSettings.settings.compactMode != null &&
+		this.isDefaultTheme(Editor.currentTheme))
+	{
+		this.setCompactMode(mxSettings.settings.compactMode);
+	}
+
 	/**
 	 * Creates github client.
 	 */
@@ -1591,6 +1795,7 @@ App.prototype.init = function()
 					{
 						this.updateButtonContainer();
 						this.restoreLibraries();
+						this.checkReleaseChannel(this.oneDrive);
 					}));
 					
 					// Notifies listeners of new client
@@ -1623,6 +1828,7 @@ App.prototype.init = function()
 			{
 				this.updateButtonContainer();
 				this.restoreLibraries();
+				this.checkReleaseChannel(this.m365);
 			}));
 
 			// Notifies listeners of new client
@@ -1707,6 +1913,8 @@ App.prototype.init = function()
 							{
 								this.checkLicense();
 							}
+
+							this.checkReleaseChannel(this.drive);
 						}))
 						
 						// Notifies listeners of new client
@@ -1840,27 +2048,9 @@ App.prototype.init = function()
 			}));
 		}
 		
-		if (!mxClient.IS_CHROMEAPP && !EditorUi.isElectronApp && DrawioFile.SYNC == 'auto' &&
-			urlParams['local'] != '1' && urlParams['stealth'] != '1' && !this.isOffline() &&
-			Editor.enableRealtimeCache && (!this.editor.chromeless || this.editor.editable))
-		{
-			// Checks if the cache is alive
-			var timeoutThread = window.setTimeout(mxUtils.bind(this, function()
-			{
-				// Switches to sync via sockets if cache is not reachable
-				Editor.enableRealtimeCache = false;
-			}), Editor.cacheTimeout);
-			
-			mxUtils.get(EditorUi.cacheUrl + '?alive', mxUtils.bind(this, function(req)
-			{
-				Editor.enableRealtimeCache = req.getStatus() >= 200 && req.getStatus() <= 299;
-				window.clearTimeout(timeoutThread);
-			}), function()
-			{
-				Editor.enableRealtimeCache = false;
-				window.clearTimeout(timeoutThread);
-			});
-		}
+		// Checks if the cache is alive (also runs when the first file
+		// starts to sync, eg. in embed mode, see DrawioFileSync.start)
+		DrawioFileSync.checkCacheAlive(this);
 	}
 
 	this.updateHeader();
@@ -2272,8 +2462,154 @@ App.prototype.showRatingBanner = function()
 };
 
 /**
+ * Looks up the release channel for the signed-in account's email domain and
+ * switches this browser when it changed. Only the email domain is
+ * transmitted (no personal information), at most once per day.
+ */
+App.prototype.checkReleaseChannel = function(client)
+{
+	try
+	{
+		var user = (client != null) ? client.getUser() : null;
+		var email = (user != null) ? user.email : null;
+		var at = (email != null) ? email.lastIndexOf('@') : -1;
+
+		// The explicit ?channel= override wins for this session.
+		if (at < 0 || !isLocalStorage || !Editor.enableServiceWorker ||
+			!('serviceWorker' in navigator) || urlParams['channel'] != null)
+		{
+			return;
+		}
+
+		var ts = parseInt(localStorage.getItem('.drawio-channel-ts'), 10);
+		var elapsed = Date.now() - ts;
+
+		// A future timestamp (corrected clock) must expire, never freeze.
+		if (!isNaN(ts) && elapsed >= 0 && elapsed < 86400000)
+		{
+			return;
+		}
+
+		localStorage.setItem('.drawio-channel-ts', String(Date.now()));
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', 'channel');
+		xhr.setRequestHeader('Content-Type', 'application/json');
+
+		xhr.onload = mxUtils.bind(this, function()
+		{
+			try
+			{
+				var verdict = null;
+
+				if (xhr.status == 404 || xhr.status == 405)
+				{
+					// The endpoint is definitively gone (the zone origin
+					// answered in its place): the channel infrastructure was
+					// decommissioned, converge to the default channel.
+					verdict = 'beta';
+				}
+				else if (xhr.status >= 200 && xhr.status <= 299)
+				{
+					var result = JSON.parse(xhr.responseText);
+
+					// Only an explicit verdict changes the channel - a buggy
+					// 200 without one must not mass-demote pinned browsers.
+					// Transient errors (5xx, network) change nothing.
+					if (result != null && (result.channel == 'stable' ||
+						result.channel == 'beta'))
+					{
+						verdict = result.channel;
+					}
+				}
+
+				if (verdict != null)
+				{
+					var channel = (verdict == 'stable') ? 'stable' : null;
+
+					if (channel != App.getReleaseChannel())
+					{
+						EditorUi.debug('App.checkReleaseChannel',
+							'Switching channel', verdict);
+						App.setReleaseChannel(channel);
+						this.switchReleaseChannel();
+					}
+				}
+			}
+			catch (e)
+			{
+				// ignore
+			}
+		});
+
+		xhr.send(JSON.stringify({domain: email.substring(at + 1)}));
+	}
+	catch (e)
+	{
+		// ignore
+	}
+};
+
+/**
+ * Registers the service worker for the stored release channel. The new
+ * worker precaches the full channel before it activates; the page reloads
+ * only then, and only without unsaved changes (else the next start uses
+ * the new channel).
+ */
+App.prototype.switchReleaseChannel = function()
+{
+	try
+	{
+		var swUrl = (App.getReleaseChannel() == 'stable') ?
+			'stable/service-worker.js' : 'service-worker.js';
+
+		// Lets other open tabs reload (when clean) via controllerchange -
+		// normal release updates set no flag and never force reloads.
+		localStorage.setItem('.drawio-channel-switch-ts', String(Date.now()));
+
+		navigator.serviceWorker.register(swUrl, {scope: './'}).then(
+			mxUtils.bind(this, function(reg)
+		{
+			var track = mxUtils.bind(this, function(sw)
+			{
+				if (sw != null)
+				{
+					sw.addEventListener('statechange', mxUtils.bind(this, function()
+					{
+						if (sw.state == 'activated' && (this.getCurrentFile() == null ||
+							!this.getCurrentFile().isModified()))
+						{
+							window.location.reload();
+						}
+					}));
+				}
+			});
+
+			if (reg.installing != null)
+			{
+				track(reg.installing);
+			}
+			else
+			{
+				reg.addEventListener('updatefound', function()
+				{
+					track(reg.installing);
+				});
+			}
+		}), function(e)
+		{
+			// ignore
+		});
+	}
+	catch (e)
+	{
+		// ignore
+	}
+};
+
+/**
  * Checks license in the case of Google Drive storage.
- * IMPORTANT: Do not change this function without consulting 
+ * IMPORTANT: Do not change this function without consulting
  * the privacy lead. No personal information must be sent.
  */
 App.prototype.checkLicense = function()
@@ -6222,8 +6558,14 @@ App.prototype.loadLibraries = function(libs, done)
 			{
 				if (libs != null)
 				{
-					for (var i = libs.length - 1; i >= 0; i--)
+					// Entries are prepended in the sidebar so they must be
+					// loaded in reverse, or in-order if they are appended
+					var append = this.sidebar.appendCustomLibraries;
+
+					for (var j = 0; j < libs.length; j++)
 					{
+						var i = (append) ? j : libs.length - 1 - j;
+
 						if (files[i] != null)
 						{
 							try
@@ -6524,6 +6866,13 @@ App.prototype.updateButtonContainer = function(skipNotifications)
 					}));
 
 					this.buttonContainer.appendChild(this.commentButton);
+
+					// Shows the number of unresolved comments of the file
+					this.addCommentsBadge(this.commentButton);
+
+					// Dragging the button to the canvas starts a comment
+					// on the shape or point it is dropped on
+					this.installCommentDragSource(this.commentButton);
 				}
 
 				this.commentButton.style.display = (this.commentsSupported()) ? '' : 'none';

@@ -213,6 +213,7 @@ Editor.linkImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My
 Editor.lightDarkLinkImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBzdHlsZT0iY29sb3Itc2NoZW1lOmxpZ2h0IGRhcms7IiBmaWxsPSJsaWdodC1kYXJrKCMwMDAwMDAsI2ZmZmZmZikiPjxwYXRoIGQ9Ik00NDAtMjgwSDI4MHEtODMgMC0xNDEuNS01OC41VDgwLTQ4MHEwLTgzIDU4LjUtMTQxLjVUMjgwLTY4MGgxNjB2ODBIMjgwcS01MCAwLTg1IDM1dC0zNSA4NXEwIDUwIDM1IDg1dDg1IDM1aDE2MHY4MFpNMzIwLTQ0MHYtODBoMzIwdjgwSDMyMFptMjAwIDE2MHYtODBoMTYwcTUwIDAgODUtMzV0MzUtODVxMC01MC0zNS04NXQtODUtMzVINTIwdi04MGgxNjBxODMgMCAxNDEuNSA1OC41VDg4MC00ODBxMCA4My01OC41IDE0MS41VDY4MC0yODBINTIwWiIvPjwvc3ZnPg==';
 Editor.tooltipImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjMWYxZjFmIj48cGF0aCBkPSJNNDQwLTI4MGg4MHYtMjQwaC04MHYyNDBabTY4LjUtMzMxLjVRNTIwLTYyMyA1MjAtNjQwdC0xMS41LTI4LjVRNDk3LTY4MCA0ODAtNjgwdC0yOC41IDExLjVRNDQwLTY1NyA0NDAtNjQwdDExLjUgMjguNVE0NjMtNjAwIDQ4MC02MDB0MjguNS0xMS41Wk00ODAtODBxLTgzIDAtMTU2LTMxLjVUMTk3LTE5N3EtNTQtNTQtODUuNS0xMjdUODAtNDgwcTAtODMgMzEuNS0xNTZUMTk3LTc2M3E1NC01NCAxMjctODUuNVQ0ODAtODgwcTgzIDAgMTU2IDMxLjVUNzYzLTc2M3E1NCA1NCA4NS41IDEyN1Q4ODAtNDgwcTAgODMtMzEuNSAxNTZUNzYzLTE5N3EtNTQgNTQtMTI3IDg1LjVUNDgwLTgwWm0wLTgwcTEzNCAwIDIyNy05M3Q5My0yMjdxMC0xMzQtOTMtMjI3dC0yMjctOTNxLTEzNCAwLTIyNyA5M3QtOTMgMjI3cTAgMTM0IDkzIDIyN3QyMjcgOTNabTAtMzIwWiIvPjwvc3ZnPg==';
 Editor.lightDarkTooltipImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBzdHlsZT0iY29sb3Itc2NoZW1lOmxpZ2h0IGRhcms7IiBmaWxsPSJsaWdodC1kYXJrKCMwMDAwMDAsI2ZmZmZmZikiPjxwYXRoIGQ9Ik00NDAtMjgwaDgwdi0yNDBoLTgwdjI0MFptNjguNS0zMzEuNVE1MjAtNjIzIDUyMC02NDB0LTExLjUtMjguNVE0OTctNjgwIDQ4MC02ODB0LTI4LjUgMTEuNVE0NDAtNjU3IDQ0MC02NDB0MTEuNSAyOC41UTQ2My02MDAgNDgwLTYwMHQyOC41LTExLjVaTTQ4MC04MHEtODMgMC0xNTYtMzEuNVQxOTctMTk3cS01NC01NC04NS41LTEyN1Q4MC00ODBxMC04MyAzMS41LTE1NlQxOTctNzYzcTU0LTU0IDEyNy04NS41VDQ4MC04ODBxODMgMCAxNTYgMzEuNVQ3NjMtNzYzcTU0IDU0IDg1LjUgMTI3VDg4MC00ODBxMCA4My0zMS41IDE1NlQ3NjMtMTk3cS01NCA1NC0xMjcgODUuNVQ0ODAtODBabTAtODBxMTM0IDAgMjI3LTkzdDkzLTIyN3EwLTEzNC05My0yMjd0LTIyNy05M3EtMTM0IDAtMjI3IDkzdC05MyAyMjdxMCAxMzQgOTMgMjI3dDIyNyA5M1ptMC0zMjBaIi8+PC9zdmc+';
+Editor.lightDarkNoteImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBzdHlsZT0iY29sb3Itc2NoZW1lOmxpZ2h0IGRhcms7IiBmaWxsPSJsaWdodC1kYXJrKCMwMDAwMDAsI2ZmZmZmZikiPjxwYXRoIGQ9Ik0yNDAtMTIwcS0zMyAwLTU2LjUtMjMuNVQxNjAtMjAwdi01NjBxMC0zMyAyMy41LTU2LjVUMjQwLTg0MGg0ODBxMzMgMCA1Ni41IDIzLjVUODAwLTc2MHYzNjBMNTIwLTEyMEgyNDBabTAtODBoMjA3di0yMzNoMjUzdi0zMjdIMjQwdjU2MFptODAtMzYwdi04MGgzMjB2ODBIMzIwWm0wIDE2MHYtODBoMTIwdjgwSDMyMFoiLz48L3N2Zz4=';
 Editor.imageImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjMDAwMDAwIj48cGF0aCBkPSJNMjAwLTEyMHEtMzMgMC01Ni41LTIzLjVUMTIwLTIwMHYtNTYwcTAtMzMgMjMuNS01Ni41VDIwMC04NDBoNTYwcTMzIDAgNTYuNSAyMy41VDg0MC03NjB2NTYwcTAgMzMtMjMuNSA1Ni41VDc2MC0xMjBIMjAwWm0wLTgwaDU2MHYtNTYwSDIwMHY1NjBabTQwLTgwaDQ4MEw1NzAtNDgwIDQ1MC0zMjBsLTkwLTEyMC0xMjAgMTYwWm0tNDAgODB2LTU2MCA1NjBaIi8+PC9zdmc+';
 Editor.horizontalRuleImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjMDAwMDAwIj48cGF0aCBkPSJNMTYwLTQ0MHYtODBoNjQwdjgwSDE2MFoiLz48L3N2Zz4=';
 Editor.tableImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjMDAwMDAwIj48cGF0aCBkPSJNMjAwLTEyMHEtMzMgMC01Ni41LTIzLjVUMTIwLTIwMHYtNTYwcTAtMzMgMjMuNS01Ni41VDIwMC04NDBoNTYwcTMzIDAgNTYuNSAyMy41VDg0MC03NjB2NTYwcTAgMzMtMjMuNSA1Ni41VDc2MC0xMjBIMjAwWm0yNDAtMjQwSDIwMHYxNjBoMjQwdi0xNjBabTgwIDB2MTYwaDI0MHYtMTYwSDUyMFptLTgwLTgwdi0xNjBIMjAwdjE2MGgyNDBabTgwIDBoMjQwdi0xNjBINTIwdjE2MFpNMjAwLTY4MGg1NjB2LTgwSDIwMHY4MFoiLz48L3N2Zz4=';
@@ -373,6 +374,13 @@ Editor.showConnectHandle = false;
  * Whether to enable the inline toolbar. Default is true.
  */
 Editor.enableInlineToolbar = true;
+
+/**
+ * Whether new groups are created with transparentBounds=1 so that their
+ * bounds are derived from their children (the Automatic option in the
+ * Arrange panel). Default is false. See jgraph/drawio#5688.
+ */
+Editor.defaultTransparentGroups = false;
 
 /**
  * Whether to show the "Automatic" (tangent) label rotation option in the
@@ -3867,7 +3875,7 @@ var WrapperWindow = function(editorUi, title, x, y, w, h, fn, div)
 		}
 	};
 	
-	// Draws page breaks only within the page
+	// Draws page breaks only within the visible area
 	mxGraph.prototype.updatePageBreaks = function(visible, width, height)
 	{
 		var scale = this.view.scale;
@@ -3881,13 +3889,50 @@ var WrapperWindow = function(editorUi, title, x, y, w, h, fn, div)
 		height = bounds2.height;
 		var bounds = new mxRectangle(scale * tr.x, scale * tr.y, fmt.width * ps, fmt.height * ps);
 
-		// Does not show page breaks if the scale is too small
-		visible = visible && Math.min(bounds.width, bounds.height) > this.minPageBreakDist;
+		// Maps from canvas to screen coordinates using the DOM as the view
+		// state is normalized in this call if CSS transforms are used
+		var ctm = (this.view.canvas != null && this.view.canvas.getCTM != null) ?
+			this.view.canvas.getCTM() : null;
+		var cs = (ctm != null) ? ctm.a : 1;
+		var cx = (ctm != null) ? ctm.e : 0;
+		var cy = (ctm != null) ? ctm.f : 0;
 
-		var horizontalCount = (visible) ? Math.min(this.maxPageBreaks, Math.ceil(height / bounds.height) - 1) : 0;
-		var verticalCount = (visible) ? Math.min(this.maxPageBreaks, Math.ceil(width / bounds.width) - 1) : 0;
+		// Does not show page breaks if the scale is too small
+		visible = visible && Math.min(bounds.width, bounds.height) * cs > this.minPageBreakDist;
+
+		var horizontalCount = (visible) ? Math.ceil(height / bounds.height) - 1 : 0;
+		var verticalCount = (visible) ? Math.ceil(width / bounds.width) - 1 : 0;
 		var right = bounds2.x + width;
 		var bottom = bounds2.y + height;
+
+		// Restricts the page breaks to the visible area plus one viewport of
+		// margin in each direction so that extreme cell coordinates cannot
+		// block the UI with an excessive number of nodes, and keeps track of
+		// the covered area for updating the clipped page breaks after scrolling
+		var hMin = 0;
+		var hMax = horizontalCount - 1;
+		var vMin = 0;
+		var vMax = verticalCount - 1;
+		this.pageBreakCoverage = null;
+
+		if (visible && this.container != null)
+		{
+			var cw = this.container.clientWidth;
+			var ch = this.container.clientHeight;
+			var x0 = (this.container.scrollLeft - cw - cx) / cs - bounds2.x;
+			var y0 = (this.container.scrollTop - ch - cy) / cs - bounds2.y;
+
+			vMin = Math.max(0, Math.floor(x0 / bounds.width) - 1);
+			vMax = Math.min(verticalCount - 1, Math.ceil((x0 + 3 * cw / cs) / bounds.width));
+			hMin = Math.max(0, Math.floor(y0 / bounds.height) - 1);
+			hMax = Math.min(horizontalCount - 1, Math.ceil((y0 + 3 * ch / cs) / bounds.height));
+
+			if (hMin > 0 || hMax < horizontalCount - 1 || vMin > 0 || vMax < verticalCount - 1)
+			{
+				this.pageBreakCoverage = new mxRectangle(this.container.scrollLeft - cw / 2,
+					this.container.scrollTop - ch / 2, 2 * cw, 2 * ch);
+			}
+		}
 
 		if (this.horizontalPageBreaks == null && horizontalCount > 0)
 		{
@@ -3903,16 +3948,24 @@ var WrapperWindow = function(editorUi, title, x, y, w, h, fn, div)
 		{
 			if (breaks != null)
 			{
-				var count = (breaks == this.horizontalPageBreaks) ? horizontalCount : verticalCount; 
-				
-				for (var i = 0; i <= count; i++)
+				var horizontal = breaks == this.horizontalPageBreaks;
+				var first = (horizontal) ? hMin : vMin;
+				var last = (horizontal) ? hMax : vMax;
+
+				// Bounds the drawing loop as a fallback where the visible
+				// area is unknown (eg. no container)
+				var count = (visible && isFinite(first) && isFinite(last)) ?
+					Math.max(0, Math.min(this.maxPageBreaks, last - first + 1)) : 0;
+
+				for (var i = 0; i < count; i++)
 				{
-					var pts = (breaks == this.horizontalPageBreaks) ?
-						[new mxPoint(Math.round(bounds2.x), Math.round(bounds2.y + (i + 1) * bounds.height)),
-						 new mxPoint(Math.round(right), Math.round(bounds2.y + (i + 1) * bounds.height))] :
-						[new mxPoint(Math.round(bounds2.x + (i + 1) * bounds.width), Math.round(bounds2.y)),
-						 new mxPoint(Math.round(bounds2.x + (i + 1) * bounds.width), Math.round(bottom))];
-					
+					var pos = first + i + 1;
+					var pts = (horizontal) ?
+						[new mxPoint(Math.round(bounds2.x), Math.round(bounds2.y + pos * bounds.height)),
+						 new mxPoint(Math.round(right), Math.round(bounds2.y + pos * bounds.height))] :
+						[new mxPoint(Math.round(bounds2.x + pos * bounds.width), Math.round(bounds2.y)),
+						 new mxPoint(Math.round(bounds2.x + pos * bounds.width), Math.round(bottom))];
+
 					if (breaks[i] != null && breaks[i].node != null)
 					{
 						breaks[i].points = pts;

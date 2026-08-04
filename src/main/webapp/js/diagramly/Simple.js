@@ -412,7 +412,7 @@ Editor.themes.push('atlas');
 									mxResources.get('note') + ' (S)', true, false, null, true, null, tw, th),
 									mxResources.get('note') + ' (S)', null, 'S');
 								addElt(boxElt, mxResources.get('rectangle') + ' (D)', null, 'D');
-								addElt(this.sidebar.createVertexTemplate('ellipse;whiteSpace=wrap;html=1;', 160, 100, '',
+								addElt(this.sidebar.createVertexTemplate('ellipse;whiteSpace=wrap;html=1;shapeInside=1;', 160, 100, '',
 									mxResources.get('ellipse') + ' (F)', true, false, null, true, null, tw, th),
 									mxResources.get('ellipse') + ' (F)', null, 'F');
 
@@ -557,6 +557,13 @@ Editor.themes.push('atlas');
 					{
 						this.commentElt = this.createMenuItem('comments', Editor.thinCommentImage, true);
 						this.commentElt.style.backgroundSize = '24px';
+
+						// Shows the number of unresolved comments of the file
+						this.addCommentsBadge(this.commentElt);
+
+						// Dragging the button to the canvas starts a comment
+						// on the shape or point it is dropped on
+						this.installCommentDragSource(this.commentElt);
 					}
 
 					if (this.shareElt == null && urlParams['embed'] != '1' &&

@@ -900,6 +900,10 @@ DrawioFile.prototype.patch = function(patches, resolver, undoable, sendChanges)
 {
 	if (patches != null)
 	{
+		EditorUi.debug('DrawioFile.patch', [this], 'patches', patches,
+			'undoable', undoable, 'realtime', this.isRealtime(),
+			'modified', this.isModified());
+
 		// Saves state of undo history
 		var undoMgr = this.ui.editor.undoManager;
 		var history = undoMgr.history.slice();
@@ -2082,7 +2086,7 @@ DrawioFile.prototype.addAllSavedStatus = function(status)
 		var rev = (this.isRevisionHistorySupported() && status != mxUtils.htmlEntities(
 			mxResources.get(this.savingStatusKey)) + '...') ? 'data-action="revisionHistory" ' : '';
 		this.ui.editor.setStatus('<div ' + rev + 'title="'+ status + '">' + status +
-			(this.isLocked() ? ' <img class="geToolbarButton" data-action="properties" ' +
+			(this.isLocked() ? ' <img class="geToolbarButton geAdaptiveAsset" data-action="properties" ' +
 			'style="margin-left:4px;flex-shrink:0;" src="' + Editor.lockedImage + '"/>' : '') + '</div>');
 	}
 };
@@ -2510,6 +2514,13 @@ DrawioFile.prototype.handleFileSuccess = function(saved)
  */
 DrawioFile.prototype.handleFileError = function(err, manual)
 {
+	// Ignores busy errors for background saves as the file is
+	// saved again when the current save operation completes
+	if (!manual && err != null && err.code == App.ERROR_BUSY)
+	{
+		return;
+	}
+
 	this.ui.spinner.stop();
 	
 	if (this.ui.getCurrentFile() == this)
@@ -3126,6 +3137,59 @@ DrawioFile.prototype.destroy = function()
 DrawioFile.prototype.commentsSupported = function()
 {
 	return false; //The default is false and files that support it must explicitly state that
+};
+
+/**
+ * Are comments anchored to shapes supported
+ */
+DrawioFile.prototype.anchoredCommentsSupported = function()
+{
+	return false;
+};
+
+/**
+ * Are @mentions in comments supported
+ */
+DrawioFile.prototype.mentionsSupported = function()
+{
+	return false;
+};
+
+/**
+ * Are free-typed addresses offered as mention targets. Only relevant
+ * for backends whose mention tokens are email-based.
+ */
+DrawioFile.prototype.freeMentionsSupported = function()
+{
+	return this.mentionsSupported();
+};
+
+/**
+ * Are mention candidates searched server-side as the user types (see
+ * EditorUi.mentionsLiveSearch)
+ */
+DrawioFile.prototype.mentionsLiveSearch = function()
+{
+	return false;
+};
+
+/**
+ * Does the backend notify mentioned people (see
+ * EditorUi.mentionNotificationsSupported)
+ */
+DrawioFile.prototype.mentionNotificationsSupported = function()
+{
+	return true;
+};
+
+/**
+ * Get the people that can be mentioned in comments of the file. query
+ * is the text typed after the @ and is only passed with
+ * mentionsLiveSearch (backends with a prefetched list ignore it).
+ */
+DrawioFile.prototype.getMentionCandidates = function(success, error, query)
+{
+	success([]); //placeholder
 };
 
 /**

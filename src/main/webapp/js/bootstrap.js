@@ -216,8 +216,7 @@ function mxinclude(src)
 
     if (mxIsElectron)
     {
-        // 'wasm-unsafe-eval' is required for the inlined libavoid WASM edge router
-        mxmeta(null, 'default-src \'self\'; script-src \'self\' \'sha256-6g514VrT/cZFZltSaKxIVNFF46+MFaTSDTPB8WfYK+c=\' \'wasm-unsafe-eval\' ' +
+        mxmeta(null, 'default-src \'self\'; script-src \'self\' \'sha256-6g514VrT/cZFZltSaKxIVNFF46+MFaTSDTPB8WfYK+c=\' ' +
             (urlParams['dev'] != '1' ? '' : ' \'unsafe-eval\'') + '; ' +
             'connect-src \'self\' https://*.draw.io https://*.diagrams.net https://fonts.googleapis.com https://fonts.gstatic.com; ' +
             'img-src * data:; media-src *; font-src * data:; frame-src \'self\'; style-src \'self\' \'unsafe-inline\' ' +
@@ -235,6 +234,32 @@ try
 catch (e)
 {
     // ignored
+}
+
+// Release channel: ?channel=stable pins this browser to the stable channel
+// before any login (enterprise onboarding link), ?channel=beta clears the
+// pin (the next daily login check of a listed domain switches it back).
+// Stored here so the service worker registration in App.main sees it on
+// this same load.
+if (isLocalStorage && urlParams['channel'] != null)
+{
+    try
+    {
+        if (urlParams['channel'] == 'stable')
+        {
+            localStorage.setItem('.drawio-channel', 'stable');
+        }
+        else if (urlParams['channel'] == 'beta')
+        {
+            localStorage.removeItem('.drawio-channel');
+        }
+
+        localStorage.removeItem('.drawio-channel-ts');
+    }
+    catch (e)
+    {
+        // ignored
+    }
 }
 
 var mxScriptsLoaded = false, mxWinLoaded = false;

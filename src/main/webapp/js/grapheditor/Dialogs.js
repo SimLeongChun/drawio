@@ -2033,7 +2033,7 @@ var AboutDialog = function(editorUi)
 /**
  * Constructs a simple textarea dialog.
  */
-var SimpleTextareaDialog = function(editorUi, value, fn, buttonLabel, helpLink, headerControl, applyKeepsOpen)
+var SimpleTextareaDialog = function(editorUi, value, fn, buttonLabel, helpLink, headerControl, applyKeepsOpen, previewFn)
 {
 	var initialValue = (value != null) ? value : '';
 	var applying = false;
@@ -2079,6 +2079,19 @@ var SimpleTextareaDialog = function(editorUi, value, fn, buttonLabel, helpLink, 
 	if (headerControl != null)
 	{
 		buttons.appendChild(headerControl);
+	}
+
+	// Optional preview of the current text (wired by the caller), keeping
+	// the dialog open and the text unapplied.
+	if (previewFn != null)
+	{
+		var previewBtn = mxUtils.button(mxResources.get('preview'), function(evt)
+		{
+			previewFn(textarea.value, evt);
+		});
+
+		previewBtn.className = 'geBtn';
+		buttons.appendChild(previewBtn);
 	}
 
 	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
@@ -2331,6 +2344,486 @@ var TextareaDialog = function(editorUi, title, url, fn, cancelFn, cancelTitle, w
 			}
 		});
 	}
+
+	if (!editorUi.editor.cancelFirst)
+	{
+		buttons.appendChild(cancelBtn);
+	}
+
+	div.appendChild(buttons);
+	this.container = div;
+};
+
+/**
+ * Constructs a small WYSIWYG HTML editor dialog with a formatting
+ * toolbar and a source view. Used for tooltips and notes where plain
+ * HTML is the established format.
+ */
+var MarkupDialog = function(editorUi, title, value, fn, cancelFn, helpLink)
+{
+	var div = document.createElement('div');
+	div.style.display = 'flex';
+	div.style.flexDirection = 'column';
+	div.style.height = '100%';
+	div.style.boxSizing = 'border-box';
+
+	var hd = document.createElement('h3');
+	mxUtils.write(hd, title);
+	hd.style.cssText = 'width:100%;text-align:center;margin:0 0 8px 0;flex-shrink:0';
+	div.appendChild(hd);
+
+	// Formatting toolbar
+	var toolbar = document.createElement('div');
+	toolbar.className = 'geMarkupToolbar';
+	div.appendChild(toolbar);
+
+	// Source view, hidden behind the WYSIWYG area initially
+	var textarea = document.createElement('textarea');
+	textarea.setAttribute('spellcheck', 'false');
+	textarea.setAttribute('autocorrect', 'off');
+	textarea.setAttribute('autocomplete', 'off');
+	textarea.setAttribute('autocapitalize', 'off');
+	textarea.style.overflow = 'auto';
+	textarea.style.resize = 'none';
+	textarea.style.flex = '1';
+	textarea.style.minHeight = '0';
+	textarea.style.width = '100%';
+	textarea.style.boxSizing = 'border-box';
+	textarea.style.display = 'none';
+	mxUtils.write(textarea, value || '');
+	div.appendChild(textarea);
+
+	this.textarea = textarea;
+
+	// WYSIWYG editing area shares the note box content styles
+	Graph.installNoteBoxStyle();
+	var wysiwyg = document.createElement('div');
+	wysiwyg.className = 'geNoteBox geMarkupWysiwyg';
+	wysiwyg.setAttribute('contenteditable', 'true');
+	wysiwyg.setAttribute('spellcheck', 'false');
+	wysiwyg.style.flex = '1';
+	wysiwyg.style.minHeight = '0';
+	div.appendChild(wysiwyg);
+
+	var sourceVisible = false;
+
+	function sourceToWysiwyg()
+	{
+		wysiwyg.innerHTML = Graph.sanitizeHtml(textarea.value);
+	};
+
+	function wysiwygToSource()
+	{
+		return Graph.sanitizeHtml(wysiwyg.innerHTML);
+	};
+
+	function getValue()
+	{
+		return (sourceVisible) ? textarea.value : wysiwygToSource();
+	};
+
+	sourceToWysiwyg();
+
+	// Pastes as plain text
+	mxEvent.addListener(wysiwyg, 'paste', function(evt)
+	{
+		if (evt.clipboardData != null)
+		{
+			var text = evt.clipboardData.getData('text/plain');
+			evt.preventDefault();
+
+			if (text != null && text.length > 0)
+			{
+				document.execCommand('insertText', false, text);
+			}
+		}
+	});
+
+	// Wraps the selection with the given markup or, in block mode, wraps
+	// the selected lines with prefix/suffix and the whole block with the
+	// given container markup
+	function applyFormat(prefix, suffix, block, containerStart, containerEnd)
+	{
+		var start = textarea.selectionStart;
+		var end = textarea.selectionEnd;
+		var text = textarea.value;
+		suffix = (suffix != null) ? suffix : '';
+
+		if (block)
+		{
+			// Expands the selection to whole lines
+			while (start > 0 && text.charAt(start - 1) != '\n')
+			{
+				start--;
+			}
+
+			while (end < text.length && text.charAt(end) != '\n')
+			{
+				end++;
+			}
+
+			var lines = text.substring(start, end).split('\n');
+
+			for (var i = 0; i < lines.length; i++)
+			{
+				lines[i] = prefix.replace('{1}', i + 1) + lines[i] + suffix;
+			}
+
+			var replaced = lines.join('\n');
+
+			if (containerStart != null)
+			{
+				replaced = containerStart + '\n' + replaced + '\n' + containerEnd;
+			}
+
+			textarea.value = text.substring(0, start) + replaced + text.substring(end);
+			textarea.selectionStart = start;
+			textarea.selectionEnd = start + replaced.length;
+		}
+		else
+		{
+			var selected = text.substring(start, end);
+			textarea.value = text.substring(0, start) + prefix + selected +
+				suffix + text.substring(end);
+
+			if (selected.length == 0)
+			{
+				textarea.selectionStart = start + prefix.length;
+				textarea.selectionEnd = textarea.selectionStart;
+			}
+			else
+			{
+				textarea.selectionStart = start;
+				textarea.selectionEnd = end + prefix.length + suffix.length;
+			}
+		}
+
+		textarea.focus();
+	};
+
+	// Returns the selection range if it is inside the WYSIWYG area
+	function getRange()
+	{
+		var sel = window.getSelection();
+
+		if (sel != null && sel.rangeCount > 0)
+		{
+			var range = sel.getRangeAt(0);
+
+			if (mxUtils.isAncestorNode(wysiwyg, range.commonAncestorContainer))
+			{
+				return range;
+			}
+		}
+
+		return null;
+	};
+
+	function execCmd(cmd, arg)
+	{
+		wysiwyg.focus();
+		document.execCommand(cmd, false, (arg != null) ? arg : null);
+	};
+
+	function wrapInline(tag)
+	{
+		var range = getRange();
+
+		if (range != null && !range.collapsed)
+		{
+			var node = document.createElement(tag);
+
+			try
+			{
+				range.surroundContents(node);
+			}
+			catch (e)
+			{
+				// Partial element selections cannot be surrounded
+				node.appendChild(range.extractContents());
+				range.insertNode(node);
+			}
+
+			var sel = window.getSelection();
+			sel.removeAllRanges();
+			range = document.createRange();
+			range.selectNodeContents(node);
+			sel.addRange(range);
+		}
+
+		wysiwyg.focus();
+	};
+
+	function insertLink()
+	{
+		var range = getRange();
+		range = (range != null) ? range.cloneRange() : null;
+
+		var dlg = new FilenameDialog(editorUi, 'https://',
+			mxResources.get('apply'), function(href)
+		{
+			if (href != null && href.length > 0 && href != 'https://')
+			{
+				wysiwyg.focus();
+
+				if (range != null)
+				{
+					var sel = window.getSelection();
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+
+				if (range != null && !range.collapsed)
+				{
+					document.execCommand('createLink', false, href);
+				}
+				else
+				{
+					var temp = mxUtils.htmlEntities(href);
+					document.execCommand('insertHTML', false,
+						'<a href="' + temp + '">' + temp + '</a>');
+				}
+			}
+		}, mxResources.get('link'));
+
+		editorUi.showDialog(dlg.container, 340, 96, true, true);
+		dlg.init();
+	};
+
+	function addFormatButton(html, title, fn)
+	{
+		// Not a geButton as those are inverted in dark mode which would
+		// cancel out the light-dark colors of the button styles
+		var btn = document.createElement('a');
+		btn.className = 'geMarkupTbBtn';
+		btn.innerHTML = html;
+		btn.setAttribute('title', title);
+
+		// Keeps the focus and selection in the editing area
+		mxEvent.addListener(btn, 'mousedown', function(evt)
+		{
+			evt.preventDefault();
+		});
+
+		mxEvent.addListener(btn, 'click', function(evt)
+		{
+			fn();
+			evt.preventDefault();
+			mxEvent.consume(evt);
+		});
+
+		toolbar.appendChild(btn);
+
+		return btn;
+	};
+
+	addFormatButton('<b>B</b>', mxResources.get('bold'), function()
+	{
+		if (sourceVisible)
+		{
+			applyFormat('<b>', '</b>');
+		}
+		else
+		{
+			execCmd('bold');
+		}
+	});
+	addFormatButton('<i>I</i>', mxResources.get('italic'), function()
+	{
+		if (sourceVisible)
+		{
+			applyFormat('<i>', '</i>');
+		}
+		else
+		{
+			execCmd('italic');
+		}
+	});
+	addFormatButton('<s>S</s>', mxResources.get('strikethrough'), function()
+	{
+		if (sourceVisible)
+		{
+			applyFormat('<s>', '</s>');
+		}
+		else
+		{
+			execCmd('strikeThrough');
+		}
+	});
+	addFormatButton('&lt;/&gt;', mxResources.get('code', null, 'Code'), function()
+	{
+		if (sourceVisible)
+		{
+			applyFormat('<code>', '</code>');
+		}
+		else
+		{
+			wrapInline('code');
+		}
+	});
+	addFormatButton('<u>a</u>', mxResources.get('link'), function()
+	{
+		if (sourceVisible)
+		{
+			var start = textarea.selectionStart;
+			var end = textarea.selectionEnd;
+			var selected = textarea.value.substring(start, end);
+			var label = (selected.length > 0) ? selected : mxResources.get('link');
+			var prefix = '<a href="';
+			var suffix = '">' + label + '</a>';
+			textarea.value = textarea.value.substring(0, start) + prefix +
+				'https://' + suffix + textarea.value.substring(end);
+			textarea.selectionStart = start + prefix.length;
+			textarea.selectionEnd = textarea.selectionStart + 8;
+			textarea.focus();
+		}
+		else
+		{
+			insertLink();
+		}
+	});
+	addFormatButton('H', mxResources.get('heading'), function()
+	{
+		if (sourceVisible)
+		{
+			applyFormat('<h1>', '</h1>', true);
+		}
+		else
+		{
+			var block = null;
+
+			try
+			{
+				block = String(document.queryCommandValue('formatBlock')).toLowerCase();
+			}
+			catch (e)
+			{
+				// ignored
+			}
+
+			execCmd('formatBlock', (block == 'h1') ? '<div>' : '<h1>');
+		}
+	});
+	addFormatButton('&bull;&ndash;', mxResources.get('bulletedList'), function()
+	{
+		if (sourceVisible)
+		{
+			applyFormat('<li>', '</li>', true, '<ul>', '</ul>');
+		}
+		else
+		{
+			execCmd('insertUnorderedList');
+		}
+	});
+	addFormatButton('1.', mxResources.get('numberedList'), function()
+	{
+		if (sourceVisible)
+		{
+			applyFormat('<li>', '</li>', true, '<ol>', '</ol>');
+		}
+		else
+		{
+			execCmd('insertOrderedList');
+		}
+	});
+
+	// Source view toggle on the right of the toolbar
+	var sourceBtn = document.createElement('a');
+	sourceBtn.className = 'geMarkupTbBtn geMarkupSourceBtn';
+	mxUtils.write(sourceBtn, mxResources.get('html', null, 'HTML'));
+
+	mxEvent.addListener(sourceBtn, 'click', function(evt)
+	{
+		if (!sourceVisible)
+		{
+			textarea.value = wysiwygToSource();
+			sourceBtn.classList.add('geActiveItem');
+		}
+		else
+		{
+			sourceToWysiwyg();
+			sourceBtn.classList.remove('geActiveItem');
+		}
+
+		sourceVisible = !sourceVisible;
+		textarea.style.display = (sourceVisible) ? '' : 'none';
+		wysiwyg.style.display = (sourceVisible) ? 'none' : '';
+		((sourceVisible) ? textarea : wysiwyg).focus();
+
+		evt.preventDefault();
+		mxEvent.consume(evt);
+	});
+
+	toolbar.appendChild(sourceBtn);
+
+	this.init = function()
+	{
+		try
+		{
+			// Semantic tags instead of styled spans for editing commands
+			document.execCommand('styleWithCSS', false, false);
+		}
+		catch (e)
+		{
+			// ignored
+		}
+
+		wysiwyg.focus();
+	};
+
+	var buttons = document.createElement('div');
+	buttons.style.display = 'flex';
+	buttons.style.whiteSpace = 'nowrap';
+	buttons.style.alignItems = 'center';
+	buttons.style.justifyContent = 'end';
+	buttons.style.marginTop = '14px';
+	buttons.style.flexShrink = '0';
+
+	if (helpLink != null && !editorUi.isOffline())
+	{
+		buttons.appendChild(editorUi.createHelpIcon(helpLink));
+	}
+
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+
+		if (cancelFn != null)
+		{
+			cancelFn();
+		}
+	});
+
+	cancelBtn.setAttribute('title', 'Escape');
+	cancelBtn.className = 'geBtn';
+
+	if (editorUi.editor.cancelFirst)
+	{
+		buttons.appendChild(cancelBtn);
+	}
+
+	var applyBtn = mxUtils.button(mxResources.get('apply'), function()
+	{
+		var newValue = getValue();
+		editorUi.hideDialog();
+		fn(newValue);
+	});
+
+	applyBtn.setAttribute('title', 'Ctrl+Enter');
+	applyBtn.className = 'geBtn gePrimaryBtn';
+	buttons.appendChild(applyBtn);
+
+	function keyHandler(e)
+	{
+		if (e.keyCode == 13 && mxEvent.isControlDown(e))
+		{
+			e.preventDefault();
+			applyBtn.click();
+		}
+	};
+
+	mxEvent.addListener(textarea, 'keydown', keyHandler);
+	mxEvent.addListener(wysiwyg, 'keydown', keyHandler);
 
 	if (!editorUi.editor.cancelFirst)
 	{
@@ -3149,16 +3642,32 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 	container.style.height = '100%';
 	var graph = optionalGraph || ui.editor.graph;
 
-	var value = graph.getModel().getValue(cell);
+	// Accepts an array of cells for editing the data of multiple
+	// cells at once, using the first cell as the reference cell
+	var cells = (cell instanceof Array) ? cell : [cell];
+	cell = cells[0];
+	var multi = cells.length > 1;
 
-	// Converts the value to an XML node
-	if (!mxUtils.isNode(value))
+	// Resolves the value of each cell as an XML node
+	var values = [];
+
+	for (var i = 0; i < cells.length; i++)
 	{
-		var doc = mxUtils.createXmlDocument();
-		var obj = doc.createElement('object');
-		obj.setAttribute('label', value || '');
-		value = obj;
+		var cellValue = graph.getModel().getValue(cells[i]);
+
+		// Converts the value to an XML node
+		if (!mxUtils.isNode(cellValue))
+		{
+			var doc = mxUtils.createXmlDocument();
+			var obj = doc.createElement('object');
+			obj.setAttribute('label', cellValue || '');
+			cellValue = obj;
+		}
+
+		values.push(cellValue);
 	}
+
+	var value = values[0];
 
 	var meta = {};
 
@@ -3180,9 +3689,11 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 	var names = [];
 	var texts = [];
 	var rows = [];
+	var mixed = [];
+	var placeholdersTouched = false;
 	var count = 0;
 
-	var id = (EditDataDialog.getDisplayIdForCell != null) ?
+	var id = (!multi && EditDataDialog.getDisplayIdForCell != null) ?
 		EditDataDialog.getDisplayIdForCell(ui, cell, optionalGraph) : null;
 
 	// Properties container for dynamic rows
@@ -3224,7 +3735,7 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 		row.appendChild(removeAttr);
 	};
 
-	var addTextArea = function(index, name, value)
+	var addTextArea = function(index, name, value, isMixed)
 	{
 		names[index] = name;
 
@@ -3242,6 +3753,16 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 		textarea.setAttribute('rows', (value.indexOf('\n') > 0) ? '3' : '2');
 		textarea.value = value;
 		textarea.style.resize = 'vertical';
+
+		// Empty fields for differing values are only applied
+		// to the cells if a value is entered by the user
+		if (isMixed)
+		{
+			mixed[index] = true;
+			textarea.setAttribute('placeholder',
+				mxResources.get('multipleValues'));
+		}
+
 		row.appendChild(textarea);
 
 		texts[index] = textarea;
@@ -3260,13 +3781,51 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 	var isLayer = graph.getModel().getParent(cell) == graph.getModel().getRoot();
 	var style = graph.getCellStyle(cell);
 
-	for (var i = 0; i < attrs.length; i++)
+	if (multi)
 	{
-		if ((attrs[i].nodeName != 'label' || style['metaEdit'] == '1' ||
-			Graph.translateDiagram || isLayer) &&
-			attrs[i].nodeName != 'placeholders')
+		// Shows the union of the attribute names of all cells with
+		// the value shown if it is the same for all cells and an
+		// empty field with a placeholder for differing values
+		var seen = {};
+
+		for (var i = 0; i < values.length; i++)
 		{
-			temp.push({name: attrs[i].nodeName, value: attrs[i].nodeValue});
+			var attrs2 = values[i].attributes;
+
+			for (var j = 0; j < attrs2.length; j++)
+			{
+				var name = attrs2[j].nodeName;
+
+				if (name != 'label' && name != 'placeholders' &&
+					!seen['$' + name])
+				{
+					seen['$' + name] = true;
+					var common = attrs2[j].nodeValue;
+
+					for (var k = 0; k < values.length && common != null; k++)
+					{
+						if (values[k].getAttribute(name) != common)
+						{
+							common = null;
+						}
+					}
+
+					temp.push({name: name, value: (common != null) ?
+						common : '', mixed: common == null});
+				}
+			}
+		}
+	}
+	else
+	{
+		for (var i = 0; i < attrs.length; i++)
+		{
+			if ((attrs[i].nodeName != 'label' || style['metaEdit'] == '1' ||
+				Graph.translateDiagram || isLayer) &&
+				attrs[i].nodeName != 'placeholders')
+			{
+				temp.push({name: attrs[i].nodeName, value: attrs[i].nodeValue});
+			}
 		}
 	}
 
@@ -3377,7 +3936,7 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 
 	for (var i = 0; i < temp.length; i++)
 	{
-		addTextArea(count, temp[i].name, temp[i].value);
+		addTextArea(count, temp[i].name, temp[i].value, temp[i].mixed);
 		count++;
 	}
 
@@ -3430,6 +3989,7 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 						names.splice(idx, 1);
 						texts.splice(idx, 1);
 						rows.splice(idx, 1);
+						mixed.splice(idx, 1);
 					}
 
 					var newIndex = names.length;
@@ -3499,15 +4059,35 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 		var input = document.createElement('input');
 		input.setAttribute('type', 'checkbox');
 
-		if (value.getAttribute('placeholders') == '1')
+		var placeholdersCount = 0;
+
+		for (var i = 0; i < values.length; i++)
+		{
+			if (values[i].getAttribute('placeholders') == '1')
+			{
+				placeholdersCount++;
+			}
+		}
+
+		if (placeholdersCount == values.length)
 		{
 			input.setAttribute('checked', 'checked');
 			input.defaultChecked = true;
 		}
+		else if (placeholdersCount > 0)
+		{
+			input.indeterminate = true;
+		}
 
 		mxEvent.addListener(input, 'click', function()
 		{
-			if (value.getAttribute('placeholders') == '1')
+			if (multi)
+			{
+				// Applied to all cells on apply only if toggled
+				placeholdersTouched = true;
+				input.indeterminate = false;
+			}
+			else if (value.getAttribute('placeholders') == '1')
 			{
 				value.removeAttribute('placeholders');
 			}
@@ -3543,7 +4123,7 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 
 	var exportBtn = mxUtils.button(mxResources.get('export'), mxUtils.bind(this, function(evt)
 	{
-		var result = graph.getDataForCells([cell], true);
+		var result = graph.getDataForCells(cells, true);
 
 		var dlg = new EmbedDialog(ui, JSON.stringify(result, null, 2), null, null, function()
 		{
@@ -3563,33 +4143,59 @@ var EditDataDialog = function(ui, cell, optionalGraph)
 		try
 		{
 			ui.hideDialog.apply(ui, arguments);
+			graph.getModel().beginUpdate();
 
-			// Clones and updates the value
-			value = value.cloneNode(true);
-			var removeLabel = false;
-
-			for (var i = 0; i < names.length; i++)
+			try
 			{
-				if (texts[i] == null)
+				for (var i = 0; i < cells.length; i++)
 				{
-					value.removeAttribute(names[i]);
-				}
-				else
-				{
-					value.setAttribute(names[i], texts[i].value);
-					removeLabel = removeLabel || (names[i] == 'placeholder' &&
-						value.getAttribute('placeholders') == '1');
+					// Clones and updates the value
+					var newValue = values[i].cloneNode(true);
+
+					// Applies the placeholders checkbox to all cells
+					// only if it was toggled by the user
+					if (multi && placeholdersTouched)
+					{
+						if (input.checked)
+						{
+							newValue.setAttribute('placeholders', '1');
+						}
+						else
+						{
+							newValue.removeAttribute('placeholders');
+						}
+					}
+
+					var removeLabel = false;
+
+					for (var j = 0; j < names.length; j++)
+					{
+						if (texts[j] == null)
+						{
+							newValue.removeAttribute(names[j]);
+						}
+						else if (!mixed[j] || texts[j].value != '')
+						{
+							newValue.setAttribute(names[j], texts[j].value);
+							removeLabel = removeLabel || (names[j] == 'placeholder' &&
+								newValue.getAttribute('placeholders') == '1');
+						}
+					}
+
+					// Removes label if placeholder is assigned
+					if (removeLabel)
+					{
+						newValue.removeAttribute('label');
+					}
+
+					// Updates the value of the cell (undoable)
+					graph.getModel().setValue(cells[i], newValue);
 				}
 			}
-
-			// Removes label if placeholder is assigned
-			if (removeLabel)
+			finally
 			{
-				value.removeAttribute('label');
+				graph.getModel().endUpdate();
 			}
-
-			// Updates the value of the cell (undoable)
-			graph.getModel().setValue(cell, value);
 		}
 		catch (e)
 		{
@@ -3874,14 +4480,16 @@ var OutlineWindow = function(editorUi, x, y, w, h)
 		if (outlineWheel)
 		{
 			var factor = graph.zoomFactor;
+			var smooth = false;
 
 			// Slower zoom for pinch gesture on trackpad
 			if (evt.deltaY != null && Math.round(evt.deltaY) != evt.deltaY)
 			{
 				factor = 1 + (Math.abs(evt.deltaY) / 20) * (factor - 1);
+				smooth = true;
 			}
 
-			graph.lazyZoom(up, null, null, factor);
+			graph.lazyZoom(up, null, null, factor, smooth);
 			mxEvent.consume(evt);
 		}
 	});

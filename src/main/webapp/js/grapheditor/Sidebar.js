@@ -241,6 +241,15 @@ Sidebar.prototype.searchClosedLibraries = true;
 Sidebar.prototype.closedLibraryOpacity = null;
 
 /**
+ * Optional map from library ID to a search ranking weight (default
+ * weight is 0). The weight breaks ties between equally scored search
+ * results, eg. to rank shapes from the latest library of a family
+ * above the same shapes from its superseded predecessors. Default
+ * is null (no weights).
+ */
+Sidebar.prototype.librarySearchWeights = null;
+
+/**
  * Whether an image-only search (eg. via an external icon provider) is
  * available. Default is false; subclassers that wire up an image search
  * backend override this to surface the "Search Images" omnibox option.
@@ -1224,6 +1233,28 @@ Sidebar.prototype.isEntryIgnored = function(entry, searchClosedLibraries)
 };
 
 /**
+ * Returns the search ranking weight for the given entry, ie. the
+ * highest librarySearchWeights value of its parent libraries.
+ * Returns 0 for entries without a weighted parent library.
+ */
+Sidebar.prototype.getEntrySearchWeight = function(entry)
+{
+	var weight = 0;
+
+	if (this.librarySearchWeights != null && entry.parentLibraries != null)
+	{
+		for (var i = 0; i < entry.parentLibraries.length; i++)
+		{
+			var temp = this.librarySearchWeights[entry.parentLibraries[i].id];
+			temp = (typeof temp === 'number') ? temp : 0;
+			weight = (i == 0) ? temp : Math.max(weight, temp);
+		}
+	}
+
+	return weight;
+};
+
+/**
  * Splits a token on camelCase and letter-digit boundaries.
  * e.g. "pid2misc" → ["pid", "misc"], "discInst" → ["disc", "inst"]
  */
@@ -1567,17 +1598,20 @@ Sidebar.prototype.searchEntries = function(searchTerms, count, page, success, er
 			}
 		}
 
-		// Collect and sort by score descending
+		// Collect and sort by score descending, using the library search
+		// weights to break ties so that entries from superseded libraries
+		// appear after equally scored entries from their replacements
 		var candidates = [];
 
-		allEntries.visit(function(key, entry)
+		allEntries.visit(mxUtils.bind(this, function(key, entry)
 		{
-			candidates.push({ entry: entry, score: scores.get(entry) || 0 });
-		});
+			candidates.push({ entry: entry, score: scores.get(entry) || 0,
+				weight: this.getEntrySearchWeight(entry) });
+		}));
 
 		candidates.sort(function(a, b)
 		{
-			return b.score - a.score;
+			return (b.score - a.score) || (b.weight - a.weight);
 		});
 
 		var results = [];
@@ -2233,6 +2267,7 @@ Sidebar.prototype.addSearchPalette = function(expand)
 								active = false;
 								page++;
 								this.insertSearchHint(div, searchTerm, count, page, results, len, more, terms);
+								this.insertSearchResultsHeader(div, searchTerm, page);
 
 								// Allows to repeat the search
 								if (results.length == 0 && page == 1)
@@ -2455,7 +2490,11 @@ Sidebar.prototype.addSearchPalette = function(expand)
 			if (input.value == '')
 			{
 				complete = true;
-				center.style.display = 'none';
+
+				// Deleting the term clears the results like Escape does
+				// (resetSearch also resets searchTerm so that repeating
+				// the previous search runs again)
+				resetSearch();
 			}
 			else if (input.value != searchTerm)
 			{
@@ -2527,6 +2566,17 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
 };
 
 /**
+ * Hook for a header above the search results (called with the page already
+ * incremented, so 1 is the first page). Does nothing here - the application
+ * layer overrides this (grapheditor must not know about specific search
+ * providers).
+ */
+Sidebar.prototype.insertSearchResultsHeader = function(div, searchTerm, page)
+{
+	// Overridden in the application
+};
+
+/**
  * Adds the general palette to the sidebar.
  */
 Sidebar.prototype.addGeneralPalette = function(expand)
@@ -2555,29 +2605,29 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 	 	this.createVertexTemplateEntry('text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;', 180, 120,
 			'<h1 style="margin-top: 0px;">Heading</h1><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ' +
 			'ut labore et dolore magna aliqua.</p>', 'Textbox', null, null, 'text textbox textarea'),
- 		this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;', 120, 80, '', 'Ellipse', null, null, 'oval ellipse state'),
+ 		this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;shapeInside=1;', 120, 80, '', 'Ellipse', null, null, 'oval ellipse state'),
 		this.createVertexTemplateEntry('whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', 'Square', null, null, 'square'),
-		this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', 'Circle', null, null, 'circle'),
+		this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;shapeInside=1;aspect=fixed;', 80, 80, '', 'Circle', null, null, 'circle'),
 	 	this.createVertexTemplateEntry('shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;', 120, 60, '', 'Process', null, null, 'process task'),
-	 	this.createVertexTemplateEntry('rhombus;whiteSpace=wrap;html=1;', 80, 80, '', 'Diamond', null, null, 'diamond rhombus if condition decision conditional question test'),
-	 	this.createVertexTemplateEntry('shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;', 120, 60, '', 'Parallelogram'),
-	 	this.createVertexTemplateEntry('shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;', 120, 80, '', 'Hexagon', null, null, 'hexagon preparation'),
-	 	this.createVertexTemplateEntry('triangle;whiteSpace=wrap;html=1;', 60, 80, '', 'Triangle', null, null, 'triangle logic inverter buffer'),
+	 	this.createVertexTemplateEntry('rhombus;whiteSpace=wrap;html=1;shapeInside=1;', 80, 80, '', 'Diamond', null, null, 'diamond rhombus if condition decision conditional question test'),
+	 	this.createVertexTemplateEntry('shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;shapeInside=1;fixedSize=1;', 120, 60, '', 'Parallelogram'),
+	 	this.createVertexTemplateEntry('shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;shapeInside=1;fixedSize=1;', 120, 80, '', 'Hexagon', null, null, 'hexagon preparation'),
+	 	this.createVertexTemplateEntry('triangle;whiteSpace=wrap;html=1;shapeInside=1;', 60, 80, '', 'Triangle', null, null, 'triangle logic inverter buffer'),
 	 	this.createVertexTemplateEntry('shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;', 60, 80, '', 'Cylinder', null, null, 'cylinder data database'),
 	 	this.createVertexTemplateEntry('ellipse;shape=cloud;whiteSpace=wrap;html=1;', 120, 80, '', 'Cloud', null, null, 'cloud network'),
 	 	this.createVertexTemplateEntry('shape=document;whiteSpace=wrap;html=1;boundedLbl=1;', 120, 80, '', 'Document'),
 	 	this.createVertexTemplateEntry('shape=internalStorage;whiteSpace=wrap;html=1;backgroundOutline=1;', 80, 80, '', 'Internal Storage'),
 	 	this.createVertexTemplateEntry('shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;', 120, 80, '', 'Cube'),
-	 	this.createVertexTemplateEntry('shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;', 120, 80, '', 'Step'),
-	 	this.createVertexTemplateEntry('shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;', 120, 60, '', 'Trapezoid'),
+	 	this.createVertexTemplateEntry('shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;shapeInside=1;fixedSize=1;', 120, 80, '', 'Step'),
+	 	this.createVertexTemplateEntry('shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;shapeInside=1;fixedSize=1;', 120, 60, '', 'Trapezoid'),
 	 	this.createVertexTemplateEntry('shape=tape;whiteSpace=wrap;html=1;', 120, 100, '', 'Tape'),
 	 	this.createVertexTemplateEntry('shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;', 80, 100, '', 'Note'),
 	    this.createVertexTemplateEntry('shape=card;whiteSpace=wrap;html=1;', 80, 100, '', 'Card'),
 	    this.createVertexTemplateEntry('shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;', 120, 80, '', 'Callout', null, null, 'bubble chat thought speech message'),
 	 	this.createVertexTemplateEntry('shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;', 30, 60, 'Actor', 'Actor', false, null, 'user person human stickman'),
-	 	this.createVertexTemplateEntry('shape=xor;whiteSpace=wrap;html=1;', 60, 80, '', 'Or', null, null, 'logic or'),
-	 	this.createVertexTemplateEntry('shape=or;whiteSpace=wrap;html=1;', 60, 80, '', 'And', null, null, 'logic and'),
-	 	this.createVertexTemplateEntry('shape=dataStorage;whiteSpace=wrap;html=1;fixedSize=1;', 100, 80, '', 'Data Storage'),
+	 	this.createVertexTemplateEntry('shape=xor;whiteSpace=wrap;html=1;shapeInside=1;', 60, 80, '', 'Or', null, null, 'logic or'),
+	 	this.createVertexTemplateEntry('shape=or;whiteSpace=wrap;html=1;shapeInside=1;', 60, 80, '', 'And', null, null, 'logic and'),
+	 	this.createVertexTemplateEntry('shape=dataStorage;whiteSpace=wrap;html=1;shapeInside=1;fixedSize=1;', 100, 80, '', 'Data Storage'),
 		this.createVertexTemplateEntry('swimlane;startSize=0;', 200, 200, '', 'Container', null, null, 'container swimlane lane pool group'),
 		this.createVertexTemplateEntry('swimlane;whiteSpace=wrap;html=1;', 200, 200, 'Vertical Container', 'Container', null, null, 'container swimlane lane pool group'),
 		this.createVertexTemplateEntry('swimlane;horizontal=0;whiteSpace=wrap;html=1;', 200, 200, 'Horizontal Container', 'Horizontal Container', null, null, 'container swimlane lane pool group'),
@@ -3835,7 +3885,14 @@ Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInse
 	
 					if (select != null && select.length > 0)
 					{
-						graph.scrollCellToVisible(select[0]);
+						// Keeps the scroll position if any part of the
+						// dropped cell is visible, eg. for cells larger
+						// than the viewport or at high zoom levels
+						if (!graph.isCellVisibleInViewport(select[0]))
+						{
+							graph.scrollCellToVisible(select[0]);
+						}
+
 						graph.setSelectionCells(select);
 					}
 
@@ -4237,13 +4294,14 @@ Sidebar.prototype.getDropAndConnectGeometry = function(source, target, direction
 };
 
 /**
- * Limits drop style to non-transparent source shapes.
+ * Limits drop style to non-transparent source shapes and groups.
  */
 Sidebar.prototype.isDropStyleEnabled = function(cells, firstVertex)
 {
 	var result = true;
 	
-	if (firstVertex != null && cells.length == 1)
+	if (firstVertex != null && cells.length == 1 &&
+		this.graph.model.getChildCount(cells[firstVertex]) == 0)
 	{
 		var vstyle = this.graph.getCellStyle(cells[firstVertex]);
 		
@@ -4522,6 +4580,10 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
 		}
 	}
 	
+	// Checks if the replace source is a group
+	var groupSource = firstVertex != null &&
+		graph.model.getChildCount(cells[firstVertex]) > 0;
+
 	var dropStyleEnabled = this.isDropStyleEnabled(cells, firstVertex);
 	
 	var dragSource = mxUtils.makeDraggable(elt, graph, mxUtils.bind(this, function(graph, evt, target, x, y)
@@ -4740,10 +4802,13 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
 				
 				if (geo2 != null && !geo2.relative && graph.model.isVertex(parent) && parent != view.currentRoot)
 				{
+					// Uses the parent origin as the base of the child coordinate
+					// space since state.x/y of transparentBounds parents also
+					// contains the child-derived bounds offset
 					var pState = view.getState(parent);
-					
-					dx = pState.x;
-					dy = pState.y;
+
+					dx = view.scale * (view.translate.x + pState.origin.x);
+					dy = view.scale * (view.translate.y + pState.origin.y);
 				}
 				
 				var dx2 = geo3.x;
@@ -4874,13 +4939,13 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
 
 		// Uses the label of the edge or one of its children as the replace target
 		var labelState = (state != null && graph.model.isEdge(state.cell) &&
-			firstVertex != null && !graph.model.isEdge(cells[0])) ?
+			firstVertex != null && !groupSource && !graph.model.isEdge(cells[0])) ?
 			this.getEdgeLabelStateAt(state, x, y) : null;
 
 		// Shift means disabled, delayed on cells with children, shows after this.dropTargetDelay, hides after 3500ms
 		if (dropStyleEnabled && (timeOnTarget < 3500) && state != null && !mxEvent.isShiftDown(evt) &&
-			// If shape is equal or target has no stroke, fill and gradient then use longer delay except for images
-			(((mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE) != mxUtils.getValue(sourceCellStyle, mxConstants.STYLE_SHAPE) &&
+			// If shape is equal or target has no stroke, fill and gradient then use longer delay except for images and groups
+			((((mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE) != mxUtils.getValue(sourceCellStyle, mxConstants.STYLE_SHAPE) || groupSource) &&
 			(mxUtils.getValue(state.style, mxConstants.STYLE_STROKECOLOR, mxConstants.NONE) != mxConstants.NONE ||
 			mxUtils.getValue(state.style, mxConstants.STYLE_FILLCOLOR, mxConstants.NONE) != mxConstants.NONE ||
 			mxUtils.getValue(state.style, mxConstants.STYLE_GRADIENTCOLOR, mxConstants.NONE) != mxConstants.NONE)) ||

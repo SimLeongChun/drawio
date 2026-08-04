@@ -7,6 +7,9 @@ var mxIsElectron = navigator.userAgent != null &&
 	navigator.userAgent.indexOf(' draw.io/') > -1;
 var GOOGLE_APPS_MAX_AREA = 25000000;
 var GOOGLE_SHEET_MAX_AREA = 1000000; // The maximum number of pixels is 1 million.
+// Maximum number of pages in the print output so that extreme cell
+// coordinates cannot block the renderer with an excessive number of pages
+var MAX_PRINT_PAGE_COUNT = 1000;
 var shadowBlocker = null;
 
 /**
@@ -95,7 +98,15 @@ if (mxIsElectron)
 		{
 			if (window.pendingRequest != null)
 			{
-				render(window.pendingRequest);
+				try
+				{
+					render(window.pendingRequest);
+				}
+				catch(e)
+				{
+					console.log(e);
+					electron.sendMessage('render-finished', null);
+				}
 			}
 
 			window.shapesLoaded = true;
@@ -501,6 +512,118 @@ function render(data)
 	
 	var graph = new Graph(container);
 	graph.enableFlowAnimation = true;
+
+	// Tags the rendered nodes of cells with tooltips and notes so their page
+	// positions can be measured in collectAnnotRects for PDF annotations
+	var collectTooltips = data.format == 'pdf' && !data.print;
+	var collectNotes = collectTooltips && data.icons == '1';
+
+	if (collectTooltips)
+	{
+		var cellRendererRedraw = graph.cellRenderer.redraw;
+
+		graph.cellRenderer.redraw = function(state)
+		{
+			cellRendererRedraw.apply(this, arguments);
+
+			if (state != null && state.cell != null && state.shape != null &&
+				state.shape.node != null)
+			{
+				if (graph.convertValueToTooltip != null)
+				{
+					var tip = Editor.convertHtmlToText(
+						graph.convertValueToTooltip(state.cell));
+
+					if (tip != null && tip != '')
+					{
+						state.shape.node.setAttribute('data-tooltip', tip);
+					}
+				}
+
+				if (collectNotes)
+				{
+					// Reads the attribute directly if the note accessors are
+					// missing, as this render window uses app.min.js which
+					// can be older than this file in development
+					var rawNote = (graph.getNoteForCell != null) ?
+						graph.getNoteForCell(state.cell) :
+						((state.cell.value != null && mxUtils.isNode(state.cell.value)) ?
+							state.cell.value.getAttribute('note') : null);
+
+					if (rawNote != null && rawNote != '')
+					{
+						var note = Editor.convertHtmlToText(
+							(graph.convertValueToNote != null) ?
+								graph.convertValueToNote(state.cell) : rawNote);
+
+						if (note != null && note != '')
+						{
+							state.shape.node.setAttribute('data-note', note);
+						}
+					}
+				}
+			}
+		};
+	}
+
+	// Returns the rects of the nodes tagged above in CSS pixels relative to
+	// their output page for the annotations in the PDF output. Page divs
+	// are the only children of the body in paged output except for the
+	// hidden LoadingComplete marker (the graph container is removed by
+	// mxPrintPreview).
+	function collectAnnotRects()
+	{
+		var result = [];
+
+		if (collectTooltips && graph.pdfPageVisible)
+		{
+			var page = 0;
+
+			for (var child = document.body.firstChild; child != null; child = child.nextSibling)
+			{
+				if (child.nodeName != null && child.nodeName.toLowerCase() == 'div' &&
+					child.id != 'LoadingComplete')
+				{
+					page++;
+					var pageRect = child.getBoundingClientRect();
+
+					if (pageRect.width > 0 && pageRect.height > 0)
+					{
+						var nodes = child.querySelectorAll('[data-tooltip], [data-note]');
+
+						for (var i = 0; i < nodes.length; i++)
+						{
+							var rect = nodes[i].getBoundingClientRect();
+							var x0 = Math.max(0, rect.left - pageRect.left);
+							var y0 = Math.max(0, rect.top - pageRect.top);
+							var x1 = Math.min(pageRect.width, rect.right - pageRect.left);
+							var y1 = Math.min(pageRect.height, rect.bottom - pageRect.top);
+
+							if (x1 > x0 && y1 > y0)
+							{
+								var types = ['tooltip', 'note'];
+
+								for (var j = 0; j < types.length; j++)
+								{
+									var tip = nodes[i].getAttribute('data-' + types[j]);
+
+									if (tip != null && tip != '')
+									{
+										result.push({type: types[j], page: page,
+											x: x0, y: y0, w: x1 - x0, h: y1 - y0,
+											pw: pageRect.width, ph: pageRect.height,
+											tip: tip});
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
 	
 	data.border = parseInt(data.border) || 0;
 	data.w = parseFloat(data.w) || 0;
@@ -845,10 +968,31 @@ function render(data)
 	var origXmlDoc = xmlDoc;
 	var diagrams = null;
 	var from = 0;
+	var singlePage = false;
+
+	// Returns an mxfile with only the exported page for explicit single
+	// page exports of multi-page files, so the embedded XML opens on the
+	// page shown in the exported image (draw.io always opens the first
+	// page of the embedded file) [jgraph/drawio-desktop#2365]
+	function getSinglePageNode()
+	{
+		if (singlePage && diagrams != null && diagrams.length > 1 &&
+			diagrams[from] != null)
+		{
+			var fileNode = origXmlDoc.documentElement.cloneNode(false);
+			fileNode.removeAttribute('pages');
+			fileNode.appendChild(diagrams[from].cloneNode(true));
+
+			return fileNode;
+		}
+
+		return null;
+	};
 
 	function getFileXml(uncompressed)
 	{
-		var xml = mxUtils.getXml(origXmlDoc);
+		var pageNode = getSinglePageNode();
+		var xml = mxUtils.getXml((pageNode != null) ? pageNode : origXmlDoc);
 		var editorUi = new HeadlessEditorUi();
 		var tmpFile = new LocalFile(editorUi, xml);
 		editorUi.setCurrentFile(tmpFile);
@@ -933,6 +1077,7 @@ function render(data)
 	};
 	
 	var preview = null;
+	var printPageCount = 0;
 	var waitCounter = 1;
 	var bounds;
 	var pageId;
@@ -1002,8 +1147,12 @@ function render(data)
 								linkTarget = '_blank';
 							}
 
+							// Page-size export uses the page rectangle as the crop
+							// (see imagePageVisible in renderPage, which installs the
+							// getBackgroundPageBounds override that getSvg uses)
 							var svgRoot = graph.getSvg(bg, expScale, data.border, false, null,
-								true, null, null, linkTarget, null, null, theme);
+								true, null, null, linkTarget, null, null, theme,
+								(data.exportType == 'page') ? 'page' : null);
 							
 							if (graph.shadowVisible)
 							{
@@ -1070,13 +1219,14 @@ function render(data)
 										
 										if (Graph.isCssFontUrl(fontUrl))
 										{
-											prefix += '@import url(' + Graph.rewriteGoogleFontUrl(fontUrl) + ');\n';
+											prefix += '@import url("' + Graph.escapeCssString(
+												Graph.rewriteGoogleFontUrl(fontUrl)) + '");\n';
 										}
 										else
 										{
 											postfix += '@font-face {\n' +
-												'font-family: "' + fontName + '";\n' + 
-												'src: url("' + fontUrl + '");\n}\n';
+												'font-family: "' + Graph.escapeCssString(fontName) + '";\n' +
+												'src: url("' + Graph.escapeCssString(fontUrl) + '");\n}\n';
 										}				
 									}
 									
@@ -1096,9 +1246,16 @@ function render(data)
 						// Include the resolved diagram XML so the main process can embed it
 						// in PNG/PDF output (-e). For Mermaid/CSV/layout inputs the source
 						// file isn't draw.io XML, so the main process has no (or a pre-layout)
-						// args.xml; data.xml here is the real post-conversion model.
+						// args.xml; data.xml here is the real post-conversion model. For
+						// explicit single page exports only that page is embedded
+						// [jgraph/drawio-desktop#2365]
+						var annotRects = collectAnnotRects();
+						var pageNode = getSinglePageNode();
+
 						electron.sendMessage('render-finished', {bounds: JSON.stringify(bounds),
-							pageCount: pageCount, xml: (data.embedXml == '1') ? data.xml : null});
+							pageCount: pageCount, xml: (data.embedXml == '1') ? ((pageNode != null) ?
+								mxUtils.getXml(pageNode) : data.xml) : null,
+							annots: (annotRects.length > 0) ? JSON.stringify(annotRects) : null});
 					}
 					catch(e)
 					{
@@ -1479,55 +1636,70 @@ function render(data)
 		// Sets initial value for PDF page background
 		var gb = graph.getGraphBounds();
 		graph.pdfPageVisible = false;
-		
+
+		// Page-size image export: the output covers the page(s) spanned by the
+		// diagram instead of cropping to the content, as with Size: Page Size
+		// in the image export dialogs [jgraph/drawio-desktop#2481]
+		var imagePageVisible = data.exportType == 'page' && !data.print &&
+			(data.format == 'png' || data.format == 'jpg' ||
+			data.format == 'jpeg' || data.format == 'svg');
+
 		// Handles PDF output where the output should match the page format if the page is visible
-		if (data.print || data.format == 'pdf')
+		if (data.print || data.format == 'pdf' || imagePageVisible)
 		{
 			var printScale = 1;
-			
+
 			var pw = data.pageWidth || xmlDoc.documentElement.getAttribute('pageWidth');
 			var ph = data.pageHeight || xmlDoc.documentElement.getAttribute('pageHeight');
-			graph.pdfPageVisible = true;
-			
+			graph.pdfPageVisible = !imagePageVisible;
+
 			if (pw != null && ph != null)
 			{
 				graph.pageFormat = new mxRectangle(0, 0, parseFloat(pw), parseFloat(ph));
 			}
-			
+
 			var ps = data.pageScale || xmlDoc.documentElement.getAttribute('pageScale');
-			
+
 			if (ps != null)
 			{
 				graph.pageScale = ps;
 			}
 
-			var pf = graph.pageFormat;
-			var temp = data.reqScale;
-			pf.width = Math.ceil(pf.width * graph.pageScale);
-			pf.height = Math.ceil(pf.height * graph.pageScale);
-			var scale = 1;
-
-			if (data.fit == '1' && data.sheetsAcross != null && data.sheetsDown != null)
+			// The print pipeline pre-multiplies the page format by the page scale
+			// (the pages are rendered larger and shrunk to the paper size by the
+			// print scale factor), while image output uses the page size as shown
+			// in the editor, which getPageSize below derives from the unchanged
+			// page format
+			if (!imagePageVisible)
 			{
-				var h = data.sheetsAcross;
-				var v = data.sheetsDown;
+				var pf = graph.pageFormat;
+				var temp = data.reqScale;
+				pf.width = Math.ceil(pf.width * graph.pageScale);
+				pf.height = Math.ceil(pf.height * graph.pageScale);
+				var scale = 1;
 
-				if (!isNaN(temp))
+				if (data.fit == '1' && data.sheetsAcross != null && data.sheetsDown != null)
 				{
-					pf.width = Math.ceil(pf.width * temp);
-					pf.height = Math.ceil(pf.height * temp);
-				}
-				
-				scale = Math.min((pf.height * v) / (gb.height / graph.view.scale),
-					(pf.width * h) / (gb.width / graph.view.scale));
-			}
-			else
-			{
-				scale = !isNaN(temp) ? temp : 1;
-			}
+					var h = data.sheetsAcross;
+					var v = data.sheetsDown;
 
-			// Applies print scale
-			data.scale = scale * printScale;
+					if (!isNaN(temp))
+					{
+						pf.width = Math.ceil(pf.width * temp);
+						pf.height = Math.ceil(pf.height * temp);
+					}
+
+					scale = Math.min((pf.height * v) / (gb.height / graph.view.scale),
+						(pf.width * h) / (gb.width / graph.view.scale));
+				}
+				else
+				{
+					scale = !isNaN(temp) ? temp : 1;
+				}
+
+				// Applies print scale
+				data.scale = scale * printScale;
+			}
 
 			graph.getPageSize = function()
 			{
@@ -1585,7 +1757,18 @@ function render(data)
 		if (!graph.pdfPageVisible)
 		{
 			var b = graph.getGraphBounds();
-			
+
+			// Uses the rectangle of the page(s) under the diagram as the export
+			// area (in unscaled graph coordinates, as the view is untransformed
+			// at this point)
+			if (imagePageVisible)
+			{
+				var layout = graph.getPageLayout();
+				var page = graph.getPageSize();
+				b = new mxRectangle(layout.x * page.width, layout.y * page.height,
+					layout.width * page.width, layout.height * page.height);
+			}
+
 			// Floor is needed to keep rendering crisp
 			if (data.w > 0 || data.h > 0)
 			{
@@ -1665,7 +1848,8 @@ function render(data)
 		}
 		
 		// Gets the diagram bounds and sets the document size
-		bounds = (graph.pdfPageVisible) ? graph.view.getBackgroundPageBounds() : graph.getGraphBounds();
+		bounds = (graph.pdfPageVisible || imagePageVisible) ?
+			graph.view.getBackgroundPageBounds() : graph.getGraphBounds();
 		bounds.width = Math.ceil(bounds.width + data.border) + 1; //The 1 extra pixels to prevent cutting the cells on the edges when crop is enabled
 		bounds.height = Math.ceil(bounds.height + data.border) + 1; //The 1 extra pixels to prevent starting a new page. TODO Not working in every case
 		
@@ -1706,7 +1890,34 @@ function render(data)
 			}
 
 			var anchorId = (currentPageId != null) ? 'page/id,' + currentPageId : null;
-			
+
+			// Computes the number of pages in the output the same way as
+			// mxPrintPreview.open and stops the export if the total exceeds
+			// MAX_PRINT_PAGE_COUNT, so that extreme cell coordinates cannot
+			// block the renderer with an excessive number of pages
+			var pcb = graph.getGraphBounds();
+			var pcs = graph.view.scale / scale;
+			var pcw = pcb.width;
+			var pch = pcb.height;
+			var pcx = x0;
+			var pcy = y0;
+
+			if (!autoOrigin)
+			{
+				pcx -= graph.view.translate.x * scale;
+				pcy -= graph.view.translate.y * scale;
+				pcw += pcb.x;
+				pch += pcb.y;
+			}
+
+			printPageCount += Math.max(1, Math.ceil((pcw / pcs + pcx) / (pf.width + 1))) *
+				Math.max(1, Math.ceil((pch / pcs + pcy) / (pf.height + 1)));
+
+			if (printPageCount > MAX_PRINT_PAGE_COUNT)
+			{
+				throw new Error('Too many pages in print output: ' + printPageCount);
+			}
+
 			if (preview == null)
 			{
 				preview = new mxPrintPreview(graph, scale, pf, border, x0, y0);
@@ -1831,6 +2042,7 @@ function render(data)
 					{
 						from = i;
 						to = i;
+						singlePage = true;
 						break;
 					}
 				}
@@ -1841,6 +2053,7 @@ function render(data)
 				to = parseInt(data.to);
 				//If to is not defined, use from (so one page), otherwise, to is restricted to the range from "from" to diagrams.length - 1
 				to = isNaN(to)? from : Math.max(from, Math.min(to, diagrams.length - 1));
+				singlePage = !isNaN(parseInt(data.from)) && from == to;
 			}
 		}
 		

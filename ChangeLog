@@ -1,3 +1,243 @@
+29-JUL-2026: 31.1.5
+
+- Fixes distance guide moving cells onto their neighbours [jgraph/drawio#5722]
+- Fixes centered resize of rotated cells changing the other extent [jgraph/drawio#5723]
+- Ships the Miro importer in extensions.min.js
+- Fixes style removals being dropped from realtime patches
+
+29-JUL-2026: 31.1.4
+
+- Updates to imageResize tool
+- Removes external plugin support from the desktop app
+- Fixes leading semicolon when removing style key followed by empty entries
+- Fixes centered text flow alignment at wrap boundaries
+- Removes dark mode media query listener on destroy
+- Fixes wrapped stand-alone mode and Electron runtime messages
+- Applies style removals in patchCell
+- Adds size guides for the size of shapes while resizing
+- Fixes the naming issue in Flowchart shapes
+- Reorders recent changes in Flowcharts stencil file
+- Fixes swapped Or/Summing junction shapes in Miro import
+- Fixes silent drop of invalid JSON and font search in configuration editor [jgraph/drawio-desktop#2500]
+- Update vendored drawio-plantuml bundle to commit dfc660e
+- Added some translation keys
+- Copy the image in addition to opening it in a new window for lightbox export button (such that if a new window is not allowed, the user can access the image) [DID-19756]
+- Update vendored drawio-plantuml bundle to commit 44ae98b
+- Integrates equal-distance guides into mxGuide, improves position guides
+- Adds edge alignment guides for resizing vertices
+- Adds config options for position and distance guides
+- Snaps the visible bounds of rotated cells to the grid [jgraph/drawio#2385]
+- Adds cell selectors for dynamic viewbox custom actions [jgraph/drawio#4584]
+- Fixes stuck segment handle next to snapped terminal points [jgraph/drawio#1137]
+- Snaps the size instead of the dragged edge for rotated cells [jgraph/drawio#2385]
+- Aligns guides with the visible bounds of rotated cells [jgraph/drawio#2385]
+- Fixes distribute with spacing at zoom levels other than 100% [jgraph/drawio#5721]
+- Fixes wheel zoom skipping 100% by using fixed zoom stops
+- Fixes GraphML import issue
+- Defends against prototype pollution [GHSA-vvpv-f297-2ghp]
+- Fixes GraphML import
+
+27-JUL-2026: 31.1.3
+
+- De-enroll the preprod worker relic; document the Cloudflare Pages path
+- Remove the unused preprod proxy worker
+- Verify the build under test on the monitoring checklist
+- Add cache functionality to preprod
+- Allow preprod.diagrams.net through the convert worker referer gate
+- Exclude .claude and internal docs from the public repo staging
+- Adds host-targeted ac/aj twins for the auth-worker routes [DID-19731]
+- Adds host-targeted ac/aj twins for the auth-worker routes [DID-19731]
+- Adds host-targeted ac/aj twin for the fast-rt websocket route [DID-19733]
+- Moves the production stable channel to 31.1.2
+- Adds the fast-rt ac/aj twin routes and moves production stable to 31.1.2
+
+26-JUL-2026: 31.1.2
+
+- Re-enroll auth-workers: keep_vars protects dashboard variables
+- Moves stable channel to 31.0.2
+
+26-JUL-2026: 31.1.1
+
+- cf-deploy: de-enroll auth-workers pending config reconciliation
+- build-preprod: repoint dashboard links to the custom domain
+- cf-deploy: Node 22 for wrangler 4
+
+26-JUL-2026: 31.1.0
+
+- Fixes font color applying to previously selected cells [jgraph/drawio-desktop#2421]
+- Documents the live release-channel system
+- Fixes sidebar order of restored libraries [jgraph/drawio#5715]
+- Adds multi-cell support to the Edit Data dialog
+- Keeps the scroll position when inserting cells from the sidebar if any part of the inserted cell is visible [jgraph/drawio#263]
+- Adds page size image export to the desktop CLI renderer [jgraph/drawio-desktop#2481]
+- Adds a defaultTransparentGroups configuration option for automatic group sizes [jgraph/drawio#5688]
+- Adds a file properties option to include notes in saved PDF files in the desktop app
+- Fixes detection of label fonts in SVG export [jgraph/drawio#5258]
+- Fixes libavoid auto-routing of terminals dropped into layout containers
+- Stops realtime cache requests on domains without a reachable cache
+- Moves src/main/java to src/main/server/java
+- tooling changes for java folder move
+- Adds cloudflare workers to project
+- Depenency updates
+- New deployment system with cf integrated
+- Minor change to release-monitor compatibiilty date
+- Updates build readme
+- Release pipeline SOC 2 hardening: durable evidence, verified identity, out-of-band change detection
+- Fix bot-push workflow triggering; actor-gate build-commit validation; vendor register
+- Document applied rulesets + preprod PR-only limitation and app-identity upgrade path
+- Set edge-drift monitor targets (account + prod zone ids) in release-monitor vars
+- release-monitor: move to Access-protected custom domain, verify identity in-worker
+- release-monitor: CSRF guard, no-overwrite on attestations, disable preview URLs
+- release-monitor: enable Access JWT verification (team domain + AUD)
+- release-monitor: withhold heartbeat when BetterStack config is missing
+- Binds SVG export popups only to the icons the export created
+- Checks the link scheme on the SVG export link icon
+- Add release-monitor control self-test workflow
+- selftest: widen the incident-wait budget to 10 minutes
+
+23-JUL-2026: 31.0.2
+
+- Applies shapeInside to all insertion paths of the supported shapes [jgraph/drawio#4535]
+- Improves the conversation list in the Generate dialog
+
+23-JUL-2026: 31.0.1
+
+- Adds backoff, max attempts and reactivation retry for realtime socket rejoin
+- Patches the visible document on merge while the realtime socket is disconnected
+- Hardens the release channel fail-safe paths
+- Documents the stable channel promote runbook in the release README
+
+23-JUL-2026: 31.0.0
+
+- Supports fontFamily/fontUrl entries in the config editor font chips
+- Fixes selection border position for rotated edge labels with non-centered alignment
+- Creates writable before data generation in local file save
+- Resets saving state on synchronous errors in Drive save
+- Reports busy error for concurrent Drive save attempts
+- Uses core oval/halfCircle markers for SysML interface templates
+- Update vendored drawio-plantuml bundle to commit bacc703
+- Hides busy save errors for automatic saves
+- Shows SVG export tooltip icons for plain text tooltips
+- Removes note icon tooltip and uses pointer cursor for overlay icons
+- Added more features to user mention in comments to support Confluence (accountId, no notification, liveSearch, ...)
+- Fixes displaced children of negative-size shapes in VSDX import
+- Fixes crafted-diagram DoS from prototype-member shape/marker/style names
+- Adds base support for text flow in shapes [jgraph/drawio#4535]
+- Adds search ranking weights to list current shape libraries before superseded ones
+- Fixes stale shape search results when the search term is deleted
+- Fixes more prototype-member map lookups from untrusted style/import data
+- Adds forced and fully disabled outline connect modes via outlineConnect style
+- Guards ELK childLayout spec against prototype-member layout names
+- Renames textFlowShapePadding to shapeInsidePadding
+- Adds automatic font size support for text flow in shapes
+- Hardens libavoid routing core maps against prototype-member cell ids
+- Fixes prototype pollution in Confluence page-id CSV import
+- Fixes prototype pollution in Confluence custom-content admin reindex
+- Guards embed RPC dispatch allow-list against inherited method names
+- Adds label padding between text and label background [jgraph/drawio#3355]
+- Fixes decimal values in numbers-type properties in the property grid
+- Adds text flow for SVG label conversion [jgraph/drawio#4535]
+- Extends centered text flow overflow above the shape
+- Triggers autosave for page view changes in inline embed mode
+- Fixes custom links not working after failed link action [jgraph/drawio-desktop#2161]
+- Refines centered text flow overflow symmetry
+- Enables text flow for supported shapes in the General palette
+- Clips expanded fill patterns to their tiles for printing
+- Adds fill pattern properties for normal mode [jgraph/drawio#3201]
+- Fixes vertical text flow alignment and joins detached trailing lines [jgraph/drawio#4535]
+- Adds customTemplates configuration option
+- Fixes ignored Labels option for label style colors in Adaptive Colors
+- Improves Adaptive Colors window layout
+- Embeds only the selected page in single page CLI exports [jgraph/drawio-desktop#2365]
+- Adds beta/stable release channel plumbing for app.diagrams.net
+- Enforces minimum table size and non-negative cell geometries in table layout
+- Matches editor text flow to the rendered label [jgraph/drawio#4535]
+- Fixes caret position when typing starts the text flow editor [jgraph/drawio#4535]
+- Reduces outgoing realtime traffic while no other collaborators are connected
+
+22-JUL-2026: 30.4.3
+
+- Extracts diagram XML from PDFs rewritten by external editors
+- Adds tooltip, link and note icons to SVG export and notes to PDF export
+- Hides SVG export icons and popups in print output
+- Routes UI colors through :root theme variables for custom color schemes [jgraph/drawio#5692]
+- Guards untrusted-key maps against prototype pollution (patch/decode XSS)
+
+22-JUL-2026: 30.4.2
+
+- Adds anchored comments, mentions and comment indicators for Google Drive files [jgraph/drawio#1694]
+- Improves version handling in release flow
+- Moves comment indicators to the bottom right corner [jgraph/drawio#1694]
+- Adds notes for cells with indicator icons and a WYSIWYG markup editor, also used for editing tooltips [jgraph/drawio#1547]
+- Adapts locked file status icon to dark mode
+- Sanitizes UML lifelineMirror foot label to prevent stored XSS
+- Adds mandatory security-review guidance to CLAUDE.md
+- Removes keyboard shortcut from editNote action [jgraph/drawio#1547]
+- Adds Alt+Shift+N keyboard shortcut for editNote action [jgraph/drawio#1547]
+- Moves compact mode restore from EditorUi to App to fix presentation mode error
+- Adds Ctrl/Cmd+cursor page navigation in presentation mode
+- Allows the replace icon to replace a shape with a dragged group [jgraph/drawio#3687]
+- Adds preview button to the Mermaid and PlantUML insert/edit dialogs [DID-8862]
+- Fixes generate tile state after errors and persists last generated diagram in template dialog
+- Shows note box on note icon click with edit button if editable [jgraph/drawio#1547]
+- Adds enabledTemplateSections config option to filter template dialog sections [jgraph/drawio#1417]
+- Removes stale gd plugin registry entry for deleted googledrive.js
+- Removes unused fonts from SVG export with external font references [jgraph/drawio#5000]
+- Uses explicit font lookups for used fonts in SVG exports [jgraph/drawio#5000]
+- Adds PDF as an editable file format in the desktop app [jgraph/drawio#4389]
+- Fixes empty diagram overwriting PNGs without diagram data in the desktop app
+- Uses null prototype for custom font lookups keyed by font name
+- Renders tooltip markup as width-limited HTML for the tooltip icon [jgraph/drawio#1547]
+- Escapes custom font names and URLs in exported and document CSS
+- Escapes custom font names and URLs in print and export server CSS [jgraph/drawio#5000]
+- vendor: update mermaid bundle (dev a23de8e — DID-19662 sequence activation events, bar child-y, box-edge margins)
+
+21-JUL-2026: 30.4.1
+
+- Offers built-in libraries as chips in shape search
+- Skips installed icon sets in shape search chips
+- Updates pako to 2.2.0
+- Removes wasm-unsafe-eval from desktop
+- Reserves stack layout title space on the painted swimlane side [jgraph/drawio#5362]
+- Fixes content shift against the crop in image export [jgraph/drawio#4938]
+- Hides device and download options for noDevice=1 in save dialog unless no other option is available
+- Accepts CSS-style space-separated values in the group padding input
+- Applies per-side group padding in extendParent and contractParent
+- Clips page breaks, page guides and ruler ticks to the visible area for extreme cell coordinates [jgraph/drawio#3251]
+- Limits the number of pages in the print output [jgraph/drawio#3251]
+- Limits the number of pages in the export renderer print output [jgraph/drawio#3251]
+- Handles invalid URI encoding in string properties
+- Repairs invalid characters and HTML entities in XML parsing and output
+- Adds resources configuration option for overriding and adding language resources [jgraph/drawio#1191]
+- Closes preview tooltips on escape before closing the dialog
+- Fixes clipping at the crop in image export [jgraph/drawio#4938]
+- Extends export bounds by the crisp offset of painted shapes [jgraph/drawio#4938]
+- Fixes coordinate frame, knot vector and cubic fitting in VSDX NURBS edge import [jgraph/drawio#2104]
+- Converts Lucidchart curves to exact cubic bezier edges on import [jgraph/drawio#1047]
+- Converts VSDX edge arcs, elliptical arcs, polylines and beziers to exact curves on import [jgraph/drawio#2104]
+- Fixes offset of cells imported after a same-block loop edge in Lucidchart import
+- Converts VSDX freeform splines to exact cubic beziers in shape geometry [jgraph/drawio#2104]
+- Improvements to GraphML curve import
+- Export dialog defaults to current file folder [jgraph/drawio-desktop#2132]
+
+18-JUL-2026: 30.4.0
+
+- Fixes sidebar drop preview position on children of transparentBounds groups
+- Records the preserve origin flag in the last layout spec
+- Shows file properties menu item for svg and html files in all themes
+- Routes non-tree edges of tree layouts as orthogonal overlays
+- Adds grouped icon search with installable set chips
+- Build of version 30.4.0
+- Build of version 30.4.0
+
+18-JUL-2026: 30.4.0
+
+- Build of version 30.4.0
+
+18-JUL-2026: 30.4.0
+
+
+
 17-JUL-2026: 30.3.14
 
 - Replaces invalid transparent fill value with none in SVG export [jgraph/drawio#5563]

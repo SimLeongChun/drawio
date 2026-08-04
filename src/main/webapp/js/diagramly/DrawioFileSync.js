@@ -135,7 +135,7 @@ DrawioFileSync = function(file)
 					}
 					else if (msg.v === DrawioFileSync.PROTOCOL && msg.d != null)
 					{
-						this.handleMessageData(msg.d);
+						this.handleMessageData(msg.d, msg.c);
 					}
 				}
 			}
@@ -175,6 +175,44 @@ DrawioFileSync.PROTOCOL = 6;
  * Enables socket connections.
  */
 DrawioFileSync.ENABLE_SOCKETS = urlParams['sockets'] != '0';
+
+/**
+ * Specifies if the realtime cache alive check was scheduled.
+ */
+DrawioFileSync.cacheAliveChecked = false;
+
+/**
+ * Disables the realtime cache if the cache endpoint is not reachable,
+ * eg. on domains that serve embed mode but do not route the cache.
+ * Runs at most once per session when the first file starts to sync.
+ */
+DrawioFileSync.checkCacheAlive = function(ui)
+{
+	if (!DrawioFileSync.cacheAliveChecked && !mxClient.IS_CHROMEAPP &&
+		!EditorUi.isElectronApp && DrawioFile.SYNC == 'auto' &&
+		urlParams['local'] != '1' && urlParams['stealth'] != '1' &&
+		!ui.isOffline() && Editor.enableRealtimeCache &&
+		(!ui.editor.chromeless || ui.editor.editable))
+	{
+		DrawioFileSync.cacheAliveChecked = true;
+
+		// Switches to sync via sockets if cache is not reachable
+		var timeoutThread = window.setTimeout(function()
+		{
+			Editor.enableRealtimeCache = false;
+		}, Editor.cacheTimeout);
+
+		mxUtils.get(EditorUi.cacheUrl + '?alive', function(req)
+		{
+			Editor.enableRealtimeCache = req.getStatus() >= 200 && req.getStatus() <= 299;
+			window.clearTimeout(timeoutThread);
+		}, function()
+		{
+			Editor.enableRealtimeCache = false;
+			window.clearTimeout(timeoutThread);
+		});
+	}
+};
 
 //Extends mxEventSource
 mxUtils.extend(DrawioFileSync, mxEventSource);
@@ -272,6 +310,8 @@ DrawioFileSync.prototype.lastActivity = null;
  */
 DrawioFileSync.prototype.start = function()
 {
+	DrawioFileSync.checkCacheAlive(this.ui);
+
 	if (this.channelId == null)
 	{
 		this.channelId = this.file.getChannelId();
@@ -505,7 +545,7 @@ DrawioFileSync.prototype.updateStatus = function()
 					(!this.file.isEditable() ? '<div class="geStatusBox" title="' +
 						mxUtils.htmlEntities(mxResources.get('readOnly')) + '">' +
 						mxUtils.htmlEntities(mxResources.get('readOnly')) + '</div>' :
-					(this.file.isLocked() ? ' <img class="geToolbarButton" data-action="properties" ' +
+					(this.file.isLocked() ? ' <img class="geToolbarButton geAdaptiveAsset" data-action="properties" ' +
 						'style="margin-left:4px;flex-shrink:0;" src="' + Editor.lockedImage + '"/>' : '')) +
 					(status != null ? '<div class="geStatusBox" title="' + mxUtils.htmlEntities(status) + '">' +
 						mxUtils.htmlEntities(status) + '</div>' : '') +
@@ -611,13 +651,21 @@ DrawioFileSync.prototype.sendJoinMessage = function()
 /**
  * Adds the listener for automatically saving the diagram for local changes.
  */
-DrawioFileSync.prototype.handleMessageData = function(data)
+DrawioFileSync.prototype.handleMessageData = function(data, clientId)
 {
 	if (data.a == 'desc')
 	{
 		if (!this.file.savingFile)
 		{
 			this.reloadDescriptor();
+		}
+	}
+	else if (data.a == 'comments')
+	{
+		// Ignores the echo of this client's own notification
+		if (clientId == null || clientId != this.clientId)
+		{
+			this.commentsChanged();
 		}
 	}
 	else if (data.a == 'join' || data.a == 'leave')
@@ -651,6 +699,43 @@ DrawioFileSync.prototype.handleMessageData = function(data)
 			this.fileChangedNotify();
 		}
 	}
+};
+
+/**
+ * Delay before the comment cache is refreshed after a remote update.
+ */
+DrawioFileSync.prototype.commentsChangedDelay = 2000;
+
+/**
+ * Notifies collaborators that the comments of the file were changed.
+ * Clients that do not know the action ignore the message so the
+ * protocol version is not bumped.
+ */
+DrawioFileSync.prototype.sendCommentsChangedMessage = function()
+{
+	this.notify(this.createMessage({a: 'comments'}));
+};
+
+/**
+ * Schedules a refresh of the comment cache after a remote comment update.
+ * Debounced as updates often arrive in bursts (eg. resolve adds a reply).
+ */
+DrawioFileSync.prototype.commentsChanged = function()
+{
+	if (this.commentsChangedThread != null)
+	{
+		window.clearTimeout(this.commentsChangedThread);
+	}
+
+	this.commentsChangedThread = window.setTimeout(mxUtils.bind(this, function()
+	{
+		this.commentsChangedThread = null;
+
+		if (this.isValidState())
+		{
+			this.ui.refreshCommentCache();
+		}
+	}), this.commentsChangedDelay);
 };
 
 /**
@@ -1162,6 +1247,16 @@ DrawioFileSync.prototype.isRealtimeActive = function()
 };
 
 /**
+ * Returns true if the realtime channel has an established session
+ * that delivers remote changes to the visible document.
+ */
+DrawioFileSync.prototype.isRealtimeConnected = function()
+{
+	return this.p2pCollab != null && this.p2pCollab.isFileJoined() &&
+		this.p2pCollab.getState() == 1 /* OPEN */;
+};
+
+/**
  * Computes and sends the local changes if the file was changed.
  */
 DrawioFileSync.prototype.sendLocalChanges = function()
@@ -1327,6 +1422,28 @@ DrawioFileSync.prototype.merge = function(patches, checksum, desc, success, erro
 					{
 						this.ui.editor.graph.refresh();
 						this.snapshotVars = newVars;
+					}
+
+					// Patches the visible document if the realtime channel
+					// is not delivering remote changes (eg. session setup
+					// failed) as they otherwise only reach ownPages and
+					// stay invisible until cleanup, which is starved while
+					// the socket is reconnecting. Uses the diff to the own
+					// pages as they contain the merged remote and local
+					// changes (sendLocalChanges was called above), so this
+					// converges and cannot apply received changes twice.
+					if (!this.isRealtimeConnected())
+					{
+						var visible = [this.ui.diffPages(this.ui.pages,
+							this.file.ownPages)];
+
+						if (!this.file.ignorePatches(visible))
+						{
+							// Aligns remote state as in cleanup
+							this.file.theirPages = this.ui.clonePages(
+								this.file.ownPages);
+							this.file.patch(visible);
+						}
 					}
 				}
 				
@@ -1785,8 +1902,8 @@ DrawioFileSync.prototype.reload = function(success, error, abort, shadow, immedi
 DrawioFileSync.prototype.descriptorChanged = function(source)
 {
 	this.lastModified = this.file.getLastModifiedDate();
-	
-	if (this.channelId != null)
+
+	if (this.channelId != null && Editor.enableRealtimeCache)
 	{
 		var msg = this.objectToString(this.createMessage({a: 'desc',
 			m: this.lastModified.getTime()}));
@@ -2145,7 +2262,13 @@ DrawioFileSync.prototype.destroy = function()
 
 		this.notify(this.createMessage(leave));
 	}
-	
+
+	if (this.commentsChangedThread != null)
+	{
+		window.clearTimeout(this.commentsChangedThread);
+		this.commentsChangedThread = null;
+	}
+
 	this.stop();
 
 	if (this.onlineListener != null)

@@ -42,6 +42,7 @@
 	Editor.thinLightImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTI0IDMwLjc1cTIuOCAwIDQuNzc1LTEuOTc1UTMwLjc1IDI2LjggMzAuNzUgMjRxMC0yLjgtMS45NzUtNC43NzVRMjYuOCAxNy4yNSAyNCAxNy4yNXEtMi44IDAtNC43NzUgMS45NzVRMTcuMjUgMjEuMiAxNy4yNSAyNHEwIDIuOCAxLjk3NSA0Ljc3NVEyMS4yIDMwLjc1IDI0IDMwLjc1Wk0yNCAzM3EtMy43NSAwLTYuMzc1LTIuNjI1VDE1IDI0cTAtMy43NSAyLjYyNS02LjM3NVQyNCAxNXEzLjc1IDAgNi4zNzUgMi42MjVUMzMgMjRxMCAzLjc1LTIuNjI1IDYuMzc1VDI0IDMzWk0zLjY1IDI1LjE1cS0uNSAwLS44MjUtLjMyNVEyLjUgMjQuNSAyLjUgMjRxMC0uNS4zMjUtLjgyNS4zMjUtLjMyNS44MjUtLjMyNWg1LjJxLjUgMCAuODI1LjMyNVExMCAyMy41IDEwIDI0cTAgLjUtLjMyNS44MjUtLjMyNS4zMjUtLjgyNS4zMjVabTM1LjUgMHEtLjUgMC0uODI1LS4zMjVRMzggMjQuNSAzOCAyNHEwLS41LjMyNS0uODI1LjMyNS0uMzI1LjgyNS0uMzI1aDUuMnEuNSAwIC44MjUuMzI1LjMyNS4zMjUuMzI1LjgyNSAwIC41LS4zMjUuODI1LS4zMjUuMzI1LS44MjUuMzI1Wk0yNCAxMHEtLjUgMC0uODI1LS4zMjUtLjMyNS0uMzI1LS4zMjUtLjgyNXYtNS4ycTAtLjUuMzI1LS44MjVRMjMuNSAyLjUgMjQgMi41cS41IDAgLjgyNS4zMjUuMzI1LjMyNS4zMjUuODI1djUuMnEwIC41LS4zMjUuODI1UTI0LjUgMTAgMjQgMTBabTAgMzUuNXEtLjUgMC0uODI1LS4zMjUtLjMyNS0uMzI1LS4zMjUtLjgyNXYtNS4ycTAtLjUuMzI1LS44MjVRMjMuNSAzOCAyNCAzOHEuNSAwIC44MjUuMzI1LjMyNS4zMjUuMzI1LjgyNXY1LjJxMCAuNS0uMzI1LjgyNS0uMzI1LjMyNS0uODI1LjMyNVpNMTIuNSAxNC4xbC0zLTIuOTVxLS4zNS0uMzUtLjMyNS0uODI1UTkuMiA5Ljg1IDkuNSA5LjVxLjM1LS4zNS44LS4zNS40NSAwIC44NS4zNWwyLjk1IDNxLjMuMzUuMy44IDAgLjQ1LS4zLjgtLjMuMy0uNzc1LjMtLjQ3NSAwLS44MjUtLjNabTI0LjM1IDI0LjQtMi45NS0zcS0uMy0uMzUtLjMtLjggMC0uNDUuMzUtLjguMjUtLjM1LjcyNS0uMzV0LjgyNS4zNWwzIDIuOTVxLjM1LjM1LjMyNS44MjUtLjAyNS40NzUtLjMyNS44MjUtLjM1LjM1LS44LjM1LS40NSAwLS44NS0uMzVaTTMzLjkgMTQuMXEtLjM1LS4zNS0uMzUtLjggMC0uNDUuMzUtLjhsMi45NS0zcS4zNS0uMzUuODI1LS4zMjUuNDc1LjAyNS44MjUuMzI1LjM1LjM1LjM1LjggMCAuNDUtLjM1Ljg1bC0zIDIuOTVxLS4zLjMtLjc3NS4zLS40NzUgMC0uODI1LS4zWk05LjUgMzguNXEtLjM1LS4zNS0uMzUtLjggMC0uNDUuMzUtLjg1bDMtMi45NXEuMzUtLjM1LjgtLjM1LjQ1IDAgLjguMzUuMzUuMy4zMjUuNzc1LS4wMjUuNDc1LS4zMjUuODI1bC0yLjk1IDNxLS40LjM1LS44NS4zNS0uNDUgMC0uOC0uMzVaTTI0IDI0WiIvPjwvc3ZnPg==';
 	Editor.thinDarkImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTI0LjA1IDQxcS03LjEgMC0xMi4wNS00Ljk1UTcuMDUgMzEuMSA3LjA1IDI0cTAtNi44IDQuNi0xMS42NSA0LjYtNC44NSAxMS4zLTUuMjUuMiAwIC40NS4wMjV0LjcuMDI1UTIyLjc1IDguNyAyMiAxMC43MjVxLS43NSAyLjAyNS0uNzUgNC4yNzUgMCA0LjkgMy40NSA4LjM1IDMuNDUgMy40NSA4LjM1IDMuNDUgMi4yIDAgNC4yNzUtLjY3NVQ0MC45IDI0LjJxMCAuMzUuMDI1LjU1LjAyNS4yLjAyNS4zNS0uNCA2LjctNS4yNSAxMS4zUTMwLjg1IDQxIDI0LjA1IDQxWm0wLTIuMjVxNS4xNSAwIDkuMDc1LTMuMTI1UTM3LjA1IDMyLjUgMzguMiAyOC4xcS0xLjIuNS0yLjUuNzI1LTEuMy4yMjUtMi42NS4yMjUtNS44NSAwLTkuOTUtNC4xVDE5IDE1cTAtMS4xNS4yMjUtMi40MjVUMjAgOS43NXEtNC42NSAxLjQtNy42NSA1LjM3NVQ5LjM1IDI0cTAgNi4xNSA0LjI3NSAxMC40NSA0LjI3NSA0LjMgMTAuNDI1IDQuM1ptLS4yNS0xNC41WiIvPjwvc3ZnPg==';
 	Editor.thinCommentImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTEyLjUgMjcuNWgyM3YtMi4yNWgtMjNabTAtNi4zNWgyM3YtMi4zaC0yM1ptMC02LjRoMjNWMTIuNWgtMjNaTTQzIDQyLjEgMzUuOSAzNWgtMjhxLTEuMTUgMC0yLjAyNS0uODc1VDUgMzIuMVY3LjlxMC0xLjE1Ljg3NS0yLjAyNVQ3LjkgNWgzMi4ycTEuMiAwIDIuMDUuODc1UTQzIDYuNzUgNDMgNy45Wk03LjI1IDcuOXYyNC44NUgzNi45bDMuODUgMy44NVY3LjlxMC0uMy0uMTc1LS40NzVUNDAuMSA3LjI1SDcuOXEtLjMgMC0uNDc1LjE3NVQ3LjI1IDcuOVptMCAwdjI4LjdWNy4yNSA3LjlaIi8+PC9zdmc+';
+	Editor.lightDarkCommentImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBzdHlsZT0iY29sb3Itc2NoZW1lOmxpZ2h0IGRhcms7IiBmaWxsPSJsaWdodC1kYXJrKCMwMDAwMDAsI2ZmZmZmZikiPjxwYXRoIGQ9Ik0yNDAtNDAwaDQ4MHYtODBIMjQwdjgwWm0wLTEyMGg0ODB2LTgwSDI0MHY4MFptMC0xMjBoNDgwdi04MEgyNDB2ODBaTTgwLTgwdi03MjBxMC0zMyAyMy41LTU2LjVUMTYwLTg4MGg2NDBxMzMgMCA1Ni41IDIzLjVUODgwLTgwMHY0ODBxMCAzMy0yMy41IDU2LjVUODAwLTI0MEgyNDBMODAtODBabTEyNi0yNDBoNTk0di00ODBIMTYwdjUyNWw0Ni00NVptLTQ2IDB2LTQ4MCA0ODBaIi8+PC9zdmc+';
 	Editor.thinMenuImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTEzLjUgMjYuMTVxLjkgMCAxLjUyNS0uNjI1LjYyNS0uNjI1LjYyNS0xLjUyNSAwLS45LS42MjUtMS41MjUtLjYyNS0uNjI1LTEuNTI1LS42MjUtLjkgMC0xLjUyNS42MjUtLjYyNS42MjUtLjYyNSAxLjUyNSAwIC45LjYyNSAxLjUyNS42MjUuNjI1IDEuNTI1LjYyNVptMTAuNSAwcS45IDAgMS41MjUtLjYyNS42MjUtLjYyNS42MjUtMS41MjUgMC0uOS0uNjI1LTEuNTI1UTI0LjkgMjEuODUgMjQgMjEuODVxLS45IDAtMS41MjUuNjI1LS42MjUuNjI1LS42MjUgMS41MjUgMCAuOS42MjUgMS41MjUuNjI1LjYyNSAxLjUyNS42MjVabTEwLjUgMHEuODUgMCAxLjQ3NS0uNjI1UTM2LjYgMjQuOSAzNi42IDI0cTAtLjktLjYyNS0xLjUyNS0uNjI1LS42MjUtMS41MjUtLjYyNS0uODUgMC0xLjQ3NS42MjUtLjYyNS42MjUtLjYyNSAxLjUyNSAwIC45LjYyNSAxLjUyNS42MjUuNjI1IDEuNTI1LjYyNVpNMjQgNDNxLTMuOTUgMC03LjQtMS41dC02LjAyNS00LjA3NVE4IDM0Ljg1IDYuNSAzMS40VDUgMjRxMC0zLjk1IDEuNS03LjQyNVE4IDEzLjEgMTAuNTc1IDEwLjU1IDEzLjE1IDggMTYuNiA2LjVUMjQgNXEzLjk1IDAgNy40MjUgMS41UTM0LjkgOCAzNy40NSAxMC41NSA0MCAxMy4xIDQxLjUgMTYuNTc1IDQzIDIwLjA1IDQzIDI0cTAgMy45NS0xLjUgNy40dC00LjA1IDYuMDI1UTM0LjkgNDAgMzEuNDI1IDQxLjUgMjcuOTUgNDMgMjQgNDNabTAtMi4yNXE3IDAgMTEuODc1LTQuOVQ0MC43NSAyNHEwLTctNC44NzUtMTEuODc1VDI0IDcuMjVxLTYuOTUgMC0xMS44NSA0Ljg3NVE3LjI1IDE3IDcuMjUgMjRxMCA2Ljk1IDQuOSAxMS44NSA0LjkgNC45IDExLjg1IDQuOVpNMjQgMjRaIi8+PC9zdmc+';
 	Editor.thinViewImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTUgMzlWOWgzOHYzMFptMjguNTUtMjAuNmg3LjJ2LTcuMTVoLTcuMlptMCA4Ljk1aDcuMnYtNi43aC03LjJabS0yNi4zIDkuNEgzMS4zdi0yNS41SDcuMjVabTI2LjMgMGg3LjJWMjkuNmgtNy4yWiIvPjwvc3ZnPg==';
 	Editor.thinUserAddImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTM2LjYgMjcuNXYtNi4zNWgtNi4zNXYtMi4zaDYuMzVWMTIuNWgyLjN2Ni4zNWg2LjM1djIuM0gzOC45djYuMzVaTTE4IDIzLjM1cS0yLjkgMC00Ljc3NS0xLjg3NVExMS4zNSAxOS42IDExLjM1IDE2LjdxMC0yLjkgMS44NzUtNC43NVQxOCAxMC4xcTIuOSAwIDQuNzc1IDEuODUgMS44NzUgMS44NSAxLjg3NSA0Ljc1dC0xLjg3NSA0Ljc3NVEyMC45IDIzLjM1IDE4IDIzLjM1Wk0zIDM4LjZ2LTMuOHEwLTEuNS44LTIuNzV0Mi4yNS0xLjlxMy40NS0xLjUgNi4yNzUtMi4xNSAyLjgyNS0uNjUgNS42NzUtLjY1IDIuODUgMCA1LjY1LjY1IDIuOC42NSA2LjI1IDIuMTUgMS40NS43IDIuMjc1IDEuOTI1VDMzIDM0Ljh2My44Wm0yLjI1LTIuMjVoMjUuNVYzNC44cTAtLjc1LS41LTEuNDc1LS41LS43MjUtMS4zLTEuMTI1LTMuMi0xLjUtNS42NzUtMi4wNVEyMC44IDI5LjYgMTggMjkuNnEtMi44IDAtNS4zLjU1VDcgMzIuMnEtLjguNC0xLjI3NSAxLjEyNS0uNDc1LjcyNS0uNDc1IDEuNDc1Wk0xOCAyMS4xcTEuODUgMCAzLjEtMS4yNXQxLjI1LTMuMTVxMC0xLjg1LTEuMjUtMy4xVDE4IDEyLjM1cS0xLjg1IDAtMy4xIDEuMjV0LTEuMjUgMy4xcTAgMS45IDEuMjUgMy4xNVQxOCAyMS4xWm0wLTQuNFptMCAxOS42NVoiLz48L3N2Zz4=';
@@ -165,6 +166,13 @@
 	 * Default value for custom libraries in mxSettings.
 	 */
 	Editor.enableCustomLibraries = true;
+
+	/**
+	 * Requests data URIs from the icon search service so inserted icons
+	 * are self-contained (no remote image references in the file). Off by
+	 * default online to keep files small.
+	 */
+	Editor.inlineExtIcons = false;
 	
 	/**
 	 * Not yet implemented. Reading uncompressed supported.
@@ -332,6 +340,12 @@
 	 * Specifies if tooltip icons should be shown on shapes. Default is false.
 	 */
 	Editor.showTooltipIcons = false;
+
+	/**
+	 * Specifies if icons should be shown on cells with a note.
+	 * Default is true.
+	 */
+	Editor.showNoteIcons = true;
 
 	/**
 	 * Specifies the tooltip font size in pixels. Default is null (uses CSS default of 11px).
@@ -596,6 +610,17 @@
 	};
 
 	/**
+	 * Returns true if the given style defines a pattern fill style that is
+	 * rendered as an SVG fill pattern when sketch mode is disabled.
+	 */
+	Editor.isPatternFillStyle = function(style)
+	{
+		var fillStyle = mxUtils.getValue(style, 'fillStyle', 'auto');
+
+		return fillStyle != 'auto' && fillStyle != 'solid';
+	};
+
+	/**
 	 * Common properties for all edges.
 	 */
 	Editor.commonProperties = [
@@ -618,17 +643,20 @@
         }},
         {name: 'fillWeight', dispName: 'Fill Weight', type: 'int', defVal: -1, isVisible: function(state, format)
         {
-        	return mxUtils.getValue(state.style, 'sketch', (urlParams['rough'] == '1') ? '1' : '0') == '1' &&
-				state.vertices.length > 0;
+        	return (mxUtils.getValue(state.style, 'sketch', (urlParams['rough'] == '1') ? '1' : '0') == '1' ||
+				Editor.isPatternFillStyle(state.style)) && state.vertices.length > 0;
         }},
         {name: 'hachureGap', dispName: 'Hachure Gap', type: 'int', defVal: -1, isVisible: function(state, format)
         {
-        	return mxUtils.getValue(state.style, 'sketch', (urlParams['rough'] == '1') ? '1' : '0') == '1' &&
-				state.vertices.length > 0;
+        	return (mxUtils.getValue(state.style, 'sketch', (urlParams['rough'] == '1') ? '1' : '0') == '1' ||
+				Editor.isPatternFillStyle(state.style)) && state.vertices.length > 0;
         }},
         {name: 'hachureAngle', dispName: 'Hachure Angle', type: 'int', defVal: -41, isVisible: function(state, format)
         {
-        	return mxUtils.getValue(state.style, 'sketch', (urlParams['rough'] == '1') ? '1' : '0') == '1' &&
+        	// The dots pattern ignores the hachure angle in normal mode
+        	return (mxUtils.getValue(state.style, 'sketch', (urlParams['rough'] == '1') ? '1' : '0') == '1' ||
+				(Editor.isPatternFillStyle(state.style) &&
+				mxUtils.getValue(state.style, 'fillStyle', 'auto') != 'dots')) &&
 				state.vertices.length > 0;
         }},
         {name: 'curveFitting', dispName: 'Curve Fitting', type: 'float', defVal: 0.95, isVisible: function(state, format)
@@ -797,6 +825,37 @@
 	 * Common properties for all vertices.
 	 */
 	Editor.commonVertexProperties = [
+		{name: 'shapeInsideShape', dispName: 'Text Flow Shape', type: 'enum', defVal: null,
+			enumList: [{val: null, dispName: 'Automatic'}, {val: 'dataStorage', dispName: 'Data Storage'},
+				{val: 'ellipse', dispName: 'Ellipse'}, {val: 'hexagon', dispName: 'Hexagon'},
+				{val: 'or', dispName: 'Or'}, {val: 'parallelogram', dispName: 'Parallelogram'},
+				{val: 'rhombus', dispName: 'Rhombus'}, {val: 'step', dispName: 'Step'},
+				{val: 'trapezoid', dispName: 'Trapezoid'}, {val: 'triangle', dispName: 'Triangle'},
+				{val: 'xor', dispName: 'Xor'}],
+			onChange: function(graph, newValue)
+			{
+				// Enables the text flow with an explicit flow shape so
+				// that the effect is immediately visible
+				if (newValue != null && newValue != '')
+				{
+					var cells = graph.getSelectionCells();
+					var vertices = [];
+
+					for (var i = 0; i < cells.length; i++)
+					{
+						if (graph.model.isVertex(cells[i]))
+						{
+							vertices.push(cells[i]);
+						}
+					}
+
+					if (vertices.length > 0)
+					{
+						graph.setCellStyles('shapeInside', '1', vertices);
+					}
+				}
+			}},
+		{name: 'shapeInsidePadding', dispName: 'Text Flow Padding', type: 'float', min: 0, defVal: 2},
         {name: 'colspan', dispName: 'Colspan', type: 'int', min: 1, defVal: 1, isVisible: function(state, format)
         {
         	var graph = format.editorUi.editor.graph;
@@ -845,7 +904,6 @@
         		{val: 'fill', dispName: 'Fill'}, {val: 'width', dispName: 'Width'}]
         },
         {name: 'noLabel', dispName: 'Hide Label', type: 'bool', defVal: false},
-        {name: 'labelPadding', dispName: 'Label Padding', type: 'float', defVal: 0},
         {name: 'direction', dispName: 'Direction', type: 'enum', defVal: 'east',
         	enumList: [{val: 'north', dispName: 'North'}, {val: 'east', dispName: 'East'}, {val: 'south', dispName: 'South'}, {val: 'west', dispName: 'West'}]
         },
@@ -866,6 +924,10 @@
         }},
         {name: 'allowArrows', dispName: 'Allow Arrows', type: 'bool', defVal: true},
         {name: 'snapToPoint', dispName: 'Snap to Point', type: 'bool', defVal: false},
+        {name: 'outlineConnect', dispName: 'Outline Connect', defVal: '1', type: 'enum',
+        	enumList: [{val: '1', dispName: 'Default'}, {val: '0', dispName: 'Delayed'},
+        		{val: '2', dispName: 'Always'}, {val: '3', dispName: 'Never'}]
+        },
         {name: 'perimeter', dispName: 'Perimeter', defVal: 'none', type: 'enum',
         	enumList: [{val: 'none', dispName: 'None'},
         			{val: 'rectanglePerimeter', dispName: 'Rectangle'}, {val: 'ellipsePerimeter', dispName: 'Ellipse'},
@@ -2427,8 +2489,10 @@
 			}
 		}
 
-		// Extracts subject from PDF 1.4
-		if (result == null && f.substring(0, 8) == '%PDF-1.4')
+		// Extracts inline or referenced subject from other PDF versions,
+		// including files rewritten by external editors (eg. Preview
+		// saves PDF 1.3 with the subject as a literal string)
+		if (result == null && f.substring(0, 5) == '%PDF-')
 		{
 			var check = '/Subject (%3Cmxfile';
 			var curline = '';
@@ -2501,11 +2565,16 @@
 		
 		if (result != null)
 		{
+			// Decodes the string escapes of external editors that rewrite
+			// the subject as a literal string (eg. Preview escapes the
+			// backslashes of the embedded subject), then the escaped
+			// parentheses of the embedded subject
 			result = decodeURIComponent(result.
+				replace(/\\([\\()])/g, '$1').
 				replace(/\\\(/g, "(").
 				replace(/\\\)/g, ")"));
 		}
-		
+
 		return result;
 	};
 
@@ -2688,6 +2757,25 @@
 				style.appendChild(document.createTextNode(config.customCss));
 				document.head.appendChild(style);
 			}
+
+			// Overrides existing or adds new language resources for
+			// mxResources.get. Maps from resource keys to strings, or to
+			// objects with one entry per language and main as the fallback,
+			// eg. {"saveAs": {"main": "Save a Copy", "de": "Kopie speichern"},
+			// "myKey": "My Text"}. See Editor.applyCustomResources.
+			if (config.resources != null)
+			{
+				if (typeof config.resources === 'object' &&
+					!Array.isArray(config.resources))
+				{
+					Editor.customResources = config.resources;
+					Editor.applyCustomResources();
+				}
+				else
+				{
+					EditorUi.debug('Configuration Error: Object expected for resources');
+				}
+			}
 			
 			if (config.enableLocalFonts != null)
 			{
@@ -2752,6 +2840,30 @@
 			if (config.templateFile != null)
 			{
 				EditorUi.templateFile = config.templateFile;
+			}
+
+			if (config.enabledTemplateSections != null)
+			{
+				if (Array.isArray(config.enabledTemplateSections))
+				{
+					EditorUi.enabledTemplateSections = config.enabledTemplateSections;
+				}
+				else
+				{
+					EditorUi.debug('Configuration Error: Array expected for enabledTemplateSections');
+				}
+			}
+
+			if (config.customTemplates != null)
+			{
+				if (Array.isArray(config.customTemplates))
+				{
+					EditorUi.customTemplates = config.customTemplates;
+				}
+				else
+				{
+					EditorUi.debug('Configuration Error: Array expected for customTemplates');
+				}
 			}
 			
 			if (config.styles != null)
@@ -2837,6 +2949,11 @@
 				Editor.showTooltipIcons = config.showTooltipIcons;
 			}
 
+			if (config.showNoteIcons != null)
+			{
+				Editor.showNoteIcons = config.showNoteIcons;
+			}
+
 			if (config.tooltipFontSize != null)
 			{
 				var val = parseInt(config.tooltipFontSize);
@@ -2878,6 +2995,27 @@
 			if (config.enableInlineToolbar != null)
 			{
 				Editor.enableInlineToolbar = config.enableInlineToolbar;
+			}
+
+			// Handlers are not defined in the embedded graph
+			if (config.enableSizeGuides != null && typeof mxVertexHandler !== 'undefined')
+			{
+				mxVertexHandler.prototype.sizeGuidesEnabled = config.enableSizeGuides;
+			}
+
+			if (config.enablePositionGuides != null && typeof mxGuide !== 'undefined')
+			{
+				mxGuide.prototype.positionEnabled = config.enablePositionGuides;
+			}
+
+			if (config.enableDistanceGuides != null && typeof mxGuide !== 'undefined')
+			{
+				mxGuide.prototype.distanceEnabled = config.enableDistanceGuides;
+			}
+
+			if (config.defaultTransparentGroups != null)
+			{
+				Editor.defaultTransparentGroups = config.defaultTransparentGroups;
 			}
 			
 			if (config.oneDriveInlinePicker != null)
@@ -3007,6 +3145,12 @@
 			if (config.enableCustomLibraries != null)
 			{
 				Editor.enableCustomLibraries = config.enableCustomLibraries;
+			}
+
+			// Inlines icon search results as data URIs on insert
+			if (config.inlineExtIcons != null)
+			{
+				Editor.inlineExtIcons = config.inlineExtIcons;
 			}
 			
 			// Overrides default vertex style
@@ -3414,6 +3558,50 @@
 			}
 		}
 	};
+
+	/**
+	 * Applies Editor.customResources to mxResources, see Editor.configure.
+	 * Values with one entry per language are resolved using the lowercase
+	 * current language, the part before the dash (eg. de for de-ch) or
+	 * main, in this order.
+	 */
+	Editor.applyCustomResources = function()
+	{
+		if (Editor.customResources != null)
+		{
+			var lan = (mxClient.language != null) ?
+				mxClient.language.toLowerCase() : null;
+			var dash = (lan != null) ? lan.indexOf('-') : -1;
+
+			for (var key in Editor.customResources)
+			{
+				var value = Editor.customResources[key];
+
+				if (value != null && typeof value === 'object')
+				{
+					value = ((lan != null) ? value[lan] : null) ||
+						((dash > 0) ? value[lan.substring(0, dash)] : null) ||
+						value['main'];
+				}
+
+				if (typeof value === 'string')
+				{
+					mxResources.resources[key] = value;
+				}
+			}
+		}
+	};
+
+	// Reapplies custom resources after each parsed resource bundle so that
+	// configured values take precedence over the built-in language files,
+	// including after the language was changed
+	var mxResourcesParse = mxResources.parse;
+
+	mxResources.parse = function(text)
+	{
+		mxResourcesParse.apply(this, arguments);
+		Editor.applyCustomResources();
+	};
 	
 	/**
 	 * 
@@ -3656,6 +3844,22 @@
 				((t.angle !== 0) ? ' rotate(' + (t.angle * 180 / Math.PI) + ')' : '') +
 				' scale(' + t.sx + ((t.sy !== t.sx) ? ',' + t.sy : '') + ')');
 
+			// Replicates the implicit clipping of pattern content to the tile
+			// (overflow is hidden on SVG patterns) so that expanded tiles
+			// render exactly like the on-screen pattern, eg. the default
+			// hatch stroke is centered on the tile edge and only half of
+			// its width is visible
+			var tileClipId = clipPrefix + (++clipCounter);
+			var tileClip = svgRoot.ownerDocument.createElementNS(svgNS, 'clipPath');
+			tileClip.setAttribute('id', tileClipId);
+
+			var tileRect = svgRoot.ownerDocument.createElementNS(svgNS, 'rect');
+			tileRect.setAttribute('x', '0');
+			tileRect.setAttribute('y', '0');
+			tileRect.setAttribute('width', pw);
+			tileRect.setAttribute('height', ph);
+			tileClip.appendChild(tileRect);
+
 			// Generate tiles by cloning pattern children
 			var patternChildren = pattern.childNodes;
 
@@ -3666,6 +3870,10 @@
 					var tileGroup = svgRoot.ownerDocument.createElementNS(svgNS, 'g');
 					tileGroup.setAttribute('transform',
 						'translate(' + (tx * pw) + ',' + (ty * ph) + ')');
+
+					// Evaluated in the tile's user space so the shared
+					// rect clips each tile in its local coordinates
+					tileGroup.setAttribute('clip-path', 'url(#' + tileClipId + ')');
 
 					for (var c = 0; c < patternChildren.length; c++)
 					{
@@ -3691,6 +3899,7 @@
 			}
 
 			defs.appendChild(clipPath);
+			defs.appendChild(tileClip);
 
 			// Insert the pattern group after the element's parent group
 			// to maintain correct stacking order
@@ -4607,6 +4816,7 @@
 		// /^https?:\/\/[^\/]*\.iconfinder.com\//.test(url) ||
 		return (this.corsRegExp != null && this.corsRegExp.test(url)) ||
 			url.substring(0, 34) === 'https://raw.githubusercontent.com/' ||
+			url.substring(0, 27) === 'https://icons.diagrams.net/' ||
 			url.substring(0, 29) === 'https://fonts.googleapis.com/' ||
 			url.substring(0, 26) === 'https://fonts.gstatic.com/';
 	};
@@ -5546,7 +5756,8 @@
 		
         if (this.cachedFonts == null) 
         {
-        	this.cachedFonts = {};
+        	// Null prototype: keyed by font URLs parsed from the diagram's extFonts
+        	this.cachedFonts = Object.create(null);
         }
 
         var finish = mxUtils.bind(this, function()
@@ -5715,11 +5926,12 @@
 	};
     
     /**
-     * Embeds external fonts
+     * Embeds the external fonts in the given font lookup. Default lookup
+     * is Graph.customFontElements.
      */
-    Editor.prototype.embedExtFonts = function(callback)
+    Editor.prototype.embedExtFonts = function(callback, lookup)
     {
-    	var extFonts = this.graph.getCustomFonts();
+    	var extFonts = this.graph.getCustomFonts(lookup);
 		
 		if (extFonts.length > 0)
 		{
@@ -5758,7 +5970,7 @@
 		                    }), mxUtils.bind(this, function(err)
 		                    {
 		                        waiting--;
-								content.push('@import url(' + fontUrl + ');\n');
+								content.push('@import url("' + Graph.escapeCssString(fontUrl) + '");\n');
 		                        googleCssDone();
 		                    }));
 						}
@@ -5770,8 +5982,8 @@
 					else
 					{
 						content.push('@font-face {' +
-							'font-family: "' + fontName + '";' + 
-							'src: url("' + fontUrl + '")}\n');
+							'font-family: "' + Graph.escapeCssString(fontName) + '";' +
+							'src: url("' + Graph.escapeCssString(fontUrl) + '")}\n');
 					}
 				}))(extFonts[i].name, extFonts[i].url);
 			}
@@ -7049,18 +7261,6 @@
 			var graph = this.editorUi.editor.graph;
 			var secondLevel = [];
 
-			function safeDecodeURIComponent(value)
-			{
-				try
-				{
-					return decodeURIComponent(value);
-				}
-				catch (e)
-				{
-					return value;
-				}
-			};
-			
 			function insertAfter(newElem, curElem)
 			{
 				curElem.parentNode.insertBefore(newElem, curElem.nextSibling);
@@ -7353,7 +7553,7 @@
 				td = document.createElement('td');
 				td.className = 'gePropRowCell';
 				td.setAttribute('title', (pValue != null) ?
-					safeDecodeURIComponent(pValue) : mxResources.get('none'));
+					mxUtils.safeDecodeURIComponent(pValue) : mxResources.get('none'));
 
 				mxEvent.addListener(td, 'click', mxUtils.bind(that, function(e)
 				{
@@ -7521,7 +7721,7 @@
 					let valueDiv = document.createElement('div');
 					valueDiv.className = 'gePropValue';
 					td.appendChild(valueDiv);
-					valueDiv.innerHTML = mxUtils.htmlEntities(safeDecodeURIComponent(pValue));
+					valueDiv.innerHTML = mxUtils.htmlEntities(mxUtils.safeDecodeURIComponent(pValue));
 
 					mxEvent.addListener(td, 'click', mxUtils.bind(that, function(e)
 					{
@@ -7537,7 +7737,7 @@
 						valueDiv.innerHTML = '';
 						var input = document.createElement('input');
 						setElementPos(valueDiv, input);
-						input.value = safeDecodeURIComponent(pValue);
+						input.value = mxUtils.safeDecodeURIComponent(pValue);
 						input.className = 'gePropEditor';
 						
 						if ((pType == 'int' || pType == 'float') && !prop.allowAuto)
@@ -7604,7 +7804,7 @@
 								// Auto is the property's default: REMOVE the key
 								// (null unsets it in setCellStyles) instead of
 								// writing jettySize=auto into the style.
-								newVal = (type == 'numbers') ? inputVal.match(/\d+/g).map(Number).join(' ') :
+								newVal = (type == 'numbers') ? inputVal.match(/\d*\.?\d+/g).map(Number).join(' ') :
 									(inputVal === 'auto' && prop.allowAuto && prop.defVal == 'auto') ? null :
 									encodeURIComponent((type == 'int'? parseInt(inputVal) : inputVal) + '');
 							}
@@ -8183,7 +8383,10 @@
 	/**
 	 * Lookup table for mapping from font URL and name to elements in the DOM.
 	 */
-	Graph.customFontElements = {};
+	// Uses a null prototype as the keys are untrusted, lowercased font
+	// names so that names such as __proto__ or constructor are stored as
+	// regular entries instead of resolving to inherited object members
+	Graph.customFontElements = Object.create(null);
 
 	/**
 	 * Returns true if the given font URL references a Google font.
@@ -8218,6 +8421,22 @@
 	};
 
 	/**
+	 * Escapes the given value for use inside a double-quoted CSS string,
+	 * such as a font-family name or a url(...) target. Font names and URLs
+	 * come from untrusted cell styles, so escaping the quote, backslash and
+	 * control characters (including newlines) keeps them inside the string
+	 * and prevents breaking out to inject CSS rules into exports or the
+	 * document stylesheet.
+	 */
+	Graph.escapeCssString = function(value)
+	{
+		return (value != null) ? String(value).replace(/[\x00-\x1f\x7f"\\]/g, function(chr)
+		{
+			return '\\' + chr.charCodeAt(0).toString(16) + ' ';
+		}) : value;
+	};
+
+	/**
 	 * Creates the DOM node for the custom font.
 	 */
 	Graph.createFontElement = function(name, url)
@@ -8237,9 +8456,9 @@
 		{
 			if (style == null)
 			{
-				style = '@font-face {\n' +	
-					'font-family: "' + name + '";\n' + 	
-					'src: url("' + url + '");\n}'
+				style = '@font-face {\n' +
+					'font-family: "' + Graph.escapeCssString(name) + '";\n' +
+					'src: url("' + Graph.escapeCssString(url) + '");\n}'
 			}
 
 			elt = document.createElement('style');
@@ -8273,10 +8492,15 @@
 			{
 				var entry = elementLookup[key];
 				
-				// Replaces element if URL has changed
+				// Replaces element if URL has changed, element is not
+				// in the document for temporary font lookups
 				if (entry != null && entry.url != url)
 				{
-					entry.elt.parentNode.removeChild(entry.elt);
+					if (entry.elt.parentNode != null)
+					{
+						entry.elt.parentNode.removeChild(entry.elt);
+					}
+
 					entry = null;
 				}
 				
@@ -8360,7 +8584,8 @@
 			
 			if (url != null)
 			{
-				var name = (elts[i].nodeName == 'FONT') ?
+				// Node name is lowercase in XML documents (eg. SVG export)
+				var name = (elts[i].nodeName.toUpperCase() == 'FONT') ?
 					elts[i].getAttribute('face') :
 					elts[i].style.fontFamily;
 	
@@ -9026,12 +9251,14 @@
 	};
 	
 	/**
-	 * Returns all custom fonts (old and new).
+	 * Returns all custom fonts (old and new) in the given font lookup.
+	 * Default lookup is Graph.customFontElements.
 	 */
-	Graph.prototype.getCustomFonts = function()
+	Graph.prototype.getCustomFonts = function(lookup)
 	{
+		lookup = (lookup != null) ? lookup : Graph.customFontElements;
 		var fonts = this.extFonts;
-		
+
 		if (fonts != null)
 		{
 			fonts = fonts.slice();
@@ -9040,22 +9267,23 @@
 		{
 			fonts = [];
 		}
-		
-		for (var key in Graph.customFontElements)
+
+		for (var key in lookup)
 		{
-			var font = Graph.customFontElements[key];
+			var font = lookup[key];
 			fonts.push({name: font.name, url: font.url});
 		}
-		
+
 		return fonts;
 	};
-	
+
 	/**
-	 * Returns the CSS with external references for the custom fonts.
+	 * Returns the CSS with external references for the custom fonts in
+	 * the given font lookup. Default lookup is Graph.customFontElements.
 	 */
-	Graph.prototype.getExtFontCss = function()
+	Graph.prototype.getExtFontCss = function(lookup)
 	{
-		var extFonts = this.getCustomFonts();
+		var extFonts = this.getCustomFonts(lookup);
 		var prefix = '';
 		var postfix = '';
 
@@ -9065,13 +9293,14 @@
 
 			if (Graph.isCssFontUrl(fontUrl))
 			{
-				prefix += '@import url(' + Graph.rewriteGoogleFontUrl(fontUrl) + ');\n';
+				prefix += '@import url("' + Graph.escapeCssString(
+					Graph.rewriteGoogleFontUrl(fontUrl)) + '");\n';
 			}
 			else
 			{
 				postfix += '@font-face {\n' +
-					'font-family: "' + fontName + '";\n' +
-					'src: url("' + fontUrl + '");\n}\n';
+					'font-family: "' + Graph.escapeCssString(fontName) + '";\n' +
+					'src: url("' + Graph.escapeCssString(fontUrl) + '");\n}\n';
 			}
 		}
 
@@ -9364,7 +9593,7 @@
 	 */
 	mxGraphView.prototype.createEnumerationValue = function(state)
 	{
-		var value = decodeURIComponent(mxUtils.getValue(state.style, 'enumerateValue', ''));
+		var value = mxUtils.safeDecodeURIComponent(mxUtils.getValue(state.style, 'enumerateValue', ''));
 
 		if (value == '')
 		{
@@ -10080,7 +10309,7 @@
 				}
 			});
 
-			var executeNextAction = mxUtils.bind(this, function()
+			var dispatchNextAction = mxUtils.bind(this, function()
 			{
 				// Bail out if the graph was torn down (e.g. presentation /
 				// lightbox view closed) mid-animation — a deferred step must
@@ -10123,8 +10352,27 @@
 
 						if (this.isCustomLink(action.open))
 						{
+							// A failed link (customLinkClicked shows the error
+							// dialog and returns false, e.g. pageNotFound)
+							// aborts the chain. The abort must reset the
+							// execution flags like the teardown guard above —
+							// leaving executingCustomActions latched sends
+							// every later call into the already-executing
+							// branch, silently disabling all custom links
+							// until the page is reloaded
+							// [jgraph/drawio-desktop#2161]. done() still fires
+							// so a waiting animation player unwinds instead of
+							// hanging on a step that never completes.
 							if (!this.customLinkClicked(action.open, cell))
 							{
+								this.executingCustomActions = false;
+								this.stoppingCustomActions = false;
+
+								if (done != null)
+								{
+									done();
+								}
+
 								return;
 							}
 						}
@@ -10348,26 +10596,75 @@
 
 					if (action.viewbox != null)
 					{
-						if (action.viewbox.smooth === true && !stop)
+						var vb = action.viewbox;
+
+						// Dynamic cell-bound viewbox: with a cells/tags/layers
+						// selector present, the box derives from the union of
+						// the resolved cells' bounds at execution time — the
+						// link follows the cells as the diagram evolves — and
+						// any static x/y/width/height is ignored. An
+						// unresolvable selector (e.g. only hidden cells, no
+						// state) skips the action, like scroll does.
+						if (vb.cells != null || vb.tags != null || vb.layers != null)
 						{
-							// Block the action chain until the smooth
-							// transition finishes so consecutive viewbox /
-							// scroll steps don't overrun each other. During
-							// stop we fall through to the instant snap below.
-							waitCounter++;
-							this.smoothFitWindow(action.viewbox,
-								action.viewbox.border, waitAndExecute);
+							var vbBounds = this.getBoundingBox(
+								this.getCellsForAction(vb));
+
+							if (vbBounds != null)
+							{
+								// State bounds are screen coords in the editor
+								// but graph coords in useCssTransforms mode
+								// (validate runs at scale 1, translate 0) —
+								// same normalization as fitDiagramToWindow.
+								var vbScale = (this.useCssTransforms) ? 1 : this.view.scale;
+								var vbTrans = (this.useCssTransforms) ?
+									new mxPoint(0, 0) : this.view.translate;
+
+								// Dynamic border is breathing room per side
+								// (screen px, like scroll's border). The fit
+								// implementations reserve the border once
+								// across the axis (clientWidth - border) and
+								// centre, which yields border/2 per side —
+								// invisible for typical values after scale
+								// quantization — so double it here.
+								var vbBorder = (vb.border != null && vb.border !== '' &&
+									!isNaN(parseFloat(vb.border))) ?
+									2 * parseFloat(vb.border) : null;
+
+								vb = {x: vbBounds.x / vbScale - vbTrans.x,
+									y: vbBounds.y / vbScale - vbTrans.y,
+									width: Math.max(1, vbBounds.width / vbScale),
+									height: Math.max(1, vbBounds.height / vbScale),
+									border: vbBorder, smooth: vb.smooth};
+							}
+							else
+							{
+								vb = null;
+							}
 						}
-						else if (this.useCssTransforms)
+
+						if (vb != null)
 						{
-							// Regular fitWindow only zooms in chromeless mode
-							// (no scrollbars to pan), so we recreate the pan
-							// ourselves via fitBoundsCssTransform.
-							this.fitBoundsCssTransform(action.viewbox, action.viewbox.border);
-						}
-						else
-						{
-							this.fitWindow(action.viewbox, action.viewbox.border);
+							if (vb.smooth === true && !stop)
+							{
+								// Block the action chain until the smooth
+								// transition finishes so consecutive viewbox /
+								// scroll steps don't overrun each other. During
+								// stop we fall through to the instant snap below.
+								waitCounter++;
+								this.smoothFitWindow(vb, vb.border, waitAndExecute);
+							}
+							else if (this.useCssTransforms)
+							{
+								// Regular fitWindow only zooms in chromeless mode
+								// (no scrollbars to pan), so we recreate the pan
+								// ourselves via fitBoundsCssTransform.
+								this.fitBoundsCssTransform(vb, vb.border);
+							}
+							else
+							{
+								this.fitWindow(vb, vb.border);
+							}
 						}
 					}
 
@@ -10530,6 +10827,29 @@
 					{
 						done();
 					}
+				}
+			});
+
+			// An action that throws (e.g. a broken action body) must not
+			// leave executingCustomActions latched — that silently disables
+			// all custom links until the page is reloaded — nor leave the
+			// model transaction open. Wraps every dispatch entry (initial,
+			// recursive and the async waitAndExecute continuations) and
+			// rethrows so a synchronous caller still surfaces the error
+			// dialog (graph.customLinkClicked catches via handleError).
+			var executeNextAction = mxUtils.bind(this, function()
+			{
+				try
+				{
+					dispatchNextAction();
+				}
+				catch (e)
+				{
+					this.executingCustomActions = false;
+					this.stoppingCustomActions = false;
+					endUpdate();
+
+					throw e;
 				}
 			});
 
@@ -11977,6 +12297,30 @@
 			optionsSection.appendChild(includeRow);
 		}
 
+		// Notes as sticky note annotations, added by the local export
+		// pipeline which only exists in the desktop app (tooltips and
+		// links are always exported)
+		var iconsInput = document.createElement('input');
+		iconsInput.setAttribute('type', 'checkbox');
+		iconsInput.setAttribute('id', 'gePrintDlgIcons');
+		iconsInput.style.marginRight = '8px';
+		iconsInput.checked = (editorUi.lastPrintIcons != null) ?
+			editorUi.lastPrintIcons : false;
+
+		if (fn != null && EditorUi.isElectronApp)
+		{
+			var iconsRow = document.createElement('div');
+			iconsRow.className = 'geDialogCheckRow';
+			iconsRow.appendChild(iconsInput);
+
+			var span = document.createElement('label');
+			span.setAttribute('for', 'gePrintDlgIcons');
+			mxUtils.write(span, mxResources.get('notes'));
+			iconsRow.appendChild(span);
+
+			optionsSection.appendChild(iconsRow);
+		}
+
 
 		advanced.wrapper.appendChild(optionsSection);
 
@@ -12013,6 +12357,7 @@
 			editorUi.lastPrintShadow = shadowsInput.checked;
 			editorUi.lastPrintTransparent = transparentInput.checked;
 			editorUi.lastPrintInclude = includeInput.checked;
+			editorUi.lastPrintIcons = iconsInput.checked;
 			editorUi.lastPrintSheetsAcross = sheetsAcrossInput.value;
 			editorUi.lastPrintSheetsDown = sheetsDownInput.value;
 
@@ -12023,6 +12368,7 @@
 			args.shadows = shadowsInput.checked;
 			args.transparent = transparentInput.checked;
 			args.includeCopy = includeInput.checked;
+			args.icons = iconsInput.checked && EditorUi.isElectronApp;
 			args.sheetsAcross = parseInt(sheetsAcrossInput.value);
 			args.sheetsDown = parseInt(sheetsDownInput.value);
 			args.pagesFrom = parseInt(pagesFromInput.value);
